@@ -87,15 +87,16 @@ public class HighChartTest {
 	}
 
 	public void setPassFailCharts() {
-		Select select = new Select(driver.findElement(By.id("chartDataType")));
-		select.selectByVisibleText("Passes/Failures");
-		driver.findElement(By.id("getbuildreport")).click();
-		wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("#tree > .table"), "Chart"));
+		setChartsHelper("Passes/Failures");
 	}
 
 	public void setRuntimeCharts() {
+		setChartsHelper("Test Runtimes");
+	}
+
+	private void setChartsHelper(String chartVisibleText) {
 		Select select = new Select(driver.findElement(By.id("chartDataType")));
-		select.selectByVisibleText("Test Runtimes");
+		select.selectByVisibleText(chartVisibleText);
 		driver.findElement(By.id("getbuildreport")).click();
 		wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("#tree > .table"), "Chart"));
 	}

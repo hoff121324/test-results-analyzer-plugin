@@ -52,52 +52,46 @@ public class AnalyzerPageTest {
 		driver.get(query);
 	}
 
+	private void BuildTestHelper(String javaScriptCommand, String contained)throws Exception {
+		js.executeScript(javaScriptCommand);
+		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
+		assertTrue(exclamation_mark.getAttribute("style").contains(contained));
+	}
+
 	@Test
 	public void OneTestTwoBuildsTrue() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"2\",\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"2\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.023},{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assertTrue(exclamation_mark.getAttribute("style").contains("inline-block"));
+		BuildTestHelper(javaScriptCommand, "inline-block");
 	}
 
 	@Test
 	public void OneTestTwoBuildsFalse() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"2\",\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"2\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.023},{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assertTrue(exclamation_mark.getAttribute("style").contains("none"));
+		BuildTestHelper(javaScriptCommand, "none");
 	}
 
 	@Test
 	public void OneTestOneBuildFalse1() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assertTrue(exclamation_mark.getAttribute("style").contains("none"));
+		BuildTestHelper(javaScriptCommand, "none");
 	}
 
 	@Test
 	public void OneTestOneBuildFalse2() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assertTrue(exclamation_mark.getAttribute("style").contains("none"));   
+		BuildTestHelper(javaScriptCommand, "none");   
 	}
 
 	@Test
 	public void OneTestMultipleBuildsTrue() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"3\",\"2\",\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"3\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.023},{\"buildNumber\":\"2\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032},{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.0432}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assert(exclamation_mark.getAttribute("style").contains("inline-block"));
+		BuildTestHelper(javaScriptCommand, "inline-block");  
 	}
 
 	@Test
 	public void OneTestMultipleBuildsFalse() throws Exception {
 		String javaScriptCommand = "var Obj = {\"builds\":[\"3\",\"2\",\"1\"],\"results\":[{\"buildResults\":[{\"buildNumber\":\"3\",\"children\":[],\"isPassed\":true,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"PASSED\",\"totalFailed\":0,\"totalPassed\":1,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.023},{\"buildNumber\":\"2\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.032},{\"buildNumber\":\"1\",\"children\":[],\"isPassed\":false,\"isSkipped\":false,\"name\":\"edu.illinois.cs427.mp3\",\"status\":\"FAILED\",\"totalFailed\":1,\"totalPassed\":0,\"totalSkipped\":0,\"totalTests\":1,\"totalTimeTaken\":0.0432}],\"buildStatuses\":[\"FAILED\",\"PASSED\"],\"children\":[],\"parentclass\":\"base\",\"parentname\":\"base\",\"text\": \"edu.illinois.cs427.mp3\",\"type\":\"package\"}]};treeMarkup = analyzerTemplate(Obj);$j(\".table\").html(treeMarkup);addEvents();newFailingTests();";
-		js.executeScript(javaScriptCommand);
-		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
-		assert(exclamation_mark.getAttribute("style").contains("none"));
+		BuildTestHelper(javaScriptCommand, "none");  
 	}
 
 	@Test

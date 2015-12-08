@@ -47,7 +47,6 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 		private String runTimeLowThreshold = "0.5";
 		private String runTimeHighThreshold = "1.0";
 
-
 		private final String lightGreen = "#92D050";
 		private final String brightGreen = "#00FF00";
 		private final String darkGreen = "#008800";
@@ -99,7 +98,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 				runTimeLowThreshold = formData.getString("runTimeLowThreshold");
 				runTimeHighThreshold = formData.getString("runTimeHighThreshold");
 				chartDataType = formData.getBoolean("chartDataType");
-				
+
 				passedStatusColor = formData.getString("passedStatusColor");
 				failedStatusColor = formData.getString("failedStatusColor");
 				skippedStatusColor = formData.getString("skippedStatusColor");

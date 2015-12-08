@@ -43,7 +43,7 @@ var tableBody = '<div class="heading">' +
 	
 
 
-function removeSpecialChars(name){
+function removeSpecialChars(name) {
 	var modName = "";
 	//modName = name.split('.').join('_');
 	modName = name.replace(/[^a-z\d/-]+/gi, "_");
@@ -52,7 +52,7 @@ function removeSpecialChars(name){
 
 Handlebars.registerPartial("tableBodyTemplate", tableContent);
 Handlebars.registerHelper('store', function (context, key, value, options) {
-	if (key !== undefined && value != undefined) {
+	if(key !== undefined && value != undefined) {
 		context[key] = value;
 	}
 	return "";
@@ -63,14 +63,15 @@ Handlebars.registerHelper('JSON2string', function (object) {
 });
 
 Handlebars.registerHelper('storeParent', function (context, key, value1, value2, options) {
-	if (value1 == undefined) {
+	if(value1 == undefined) {
 		value1 = "";
 	}
-	if (value2 == undefined) {
+
+	if(value2 == undefined) {
 		value2 = "";
 	}
 
-	if (key !== undefined) {
+	if(key !== undefined) {
 		context[key] = removeSpecialChars(value1) + "-" + removeSpecialChars(value2);
 	}
 	return "";
@@ -94,10 +95,7 @@ Handlebars.registerHelper('applyvalue', function (status, totalTimeTaken) {
 });
 
 Handlebars.registerHelper('applyuser', function (userSet) {
-	// if(userSet.size()!==0)
 		return String(userSet);
-	// else
-	//     return "fail";
 });
 
 Handlebars.registerHelper('applystatus', function (status) {
@@ -134,7 +132,7 @@ Handlebars.registerHelper('addIndent', function (hierarchyLevel) {
 });
 
 Handlebars.registerHelper('addHierarchy', function (context, parentHierarchy, options) {
-	if (parentHierarchy == undefined)
+	if(parentHierarchy == undefined)
 		parentHierarchy = 0;
 	context["hierarchyLevel"] = parentHierarchy + 1;
 });

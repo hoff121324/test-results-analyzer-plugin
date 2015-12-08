@@ -34,11 +34,11 @@ public class JsTreeUtil {
 
 		tree.put("results", results);
 
-		JSONArray owner= new JSONArray();
+		JSONArray owner = new JSONArray();
 		for(int i=0; i < users.size(); i++){
-			JSONObject userJason = new JSONObject();
-			userJason.put( "userSet" , users.get(i) );
-			owner.add(userJason);
+			JSONObject userJson = new JSONObject();
+			userJson.put( "userSet" , users.get(i) );
+			owner.add(userJson);
 		}
 
 		tree.put("owneruser", owner);

@@ -133,10 +133,8 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 	public List<String> getUsersList(List<Integer> buildList) {
 		userString = new ArrayList<String>();
 
-		//angry comment: this can be done in O(n) runtime instead of O(n^2)
-		for(int i : buildList) {
-			int position = builds.indexOf(i);
-			userString.add( userInBuildChange.get(position) );
+		for(int position=0; position<buildList.size(); position++) {
+			userString.add(userInBuildChange.get(position));
 		}
 		return userString;
 	}
@@ -227,7 +225,7 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 		String buildsString = "";
 		for(int i = 0; i < builds.size(); i++) {
 			buildsString += ",\"" + Integer.toString(builds.get(i)) + "\"";
-		}		
+		}
 		String header = "\"Package\",\"Class\",\"Test\"";
 		header += buildsString;
 		String export = header + System.lineSeparator();
@@ -279,6 +277,9 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 		}
 	}
 
+	/**
+	 *  @brief Accessor methods used by the main index.jelly page
+	 */
 	public String getNoOfBuilds() {
 		return TestResultsAnalyzerExtension.DESCRIPTOR.getNoOfBuilds();
 	}

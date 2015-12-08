@@ -2,7 +2,7 @@ var chartResult;
 
 function generateChart(chartType) {
 	if($j("#tree input[type='checkbox']").size() == 0) {
-		$j("#linechart").html("No build data retrieved.	 You may need to select a Module.");
+		$j("#linechart").html("No build data retrieved.	 You may need to select a Module.  Make sure you have configured your Job to publish JUnit Test Reports.");
 		return;
 	}
 
@@ -37,7 +37,7 @@ function generateChart(chartType) {
 	}
 }
 
-function resetCharts(){
+function resetCharts() {
 	$j("#linechart").html("");
 	$j("#barchart").html("");
 	$j("#piechart").html("");
@@ -76,7 +76,7 @@ function generateRuntimePieChart(inputData) {
 	var highThreshold = parseFloat($j("#runTimeHighThreshold").val());
 
 	total = runtimeArray.length;
-	for (var key in runtimeArray) {
+	for(var key in runtimeArray) {
 		var time = runtimeArray[key];
 		if (time < lowThreshold) {
 			fast ++;
@@ -261,12 +261,12 @@ function getChartData(selectedRows, type) {
 			var jsonResult = $j.parseJSON($j(buildResult).attr("data-result"));
 			var buildNumber = jsonResult["buildNumber"];
 
-			if (type == "runtime") {
+			if(type == "runtime") {
 				var tempBuildResult = {
 					"Runtime" : jsonResult["totalTimeTaken"] ? jsonResult["totalTimeTaken"] : 0,
 					"RuntimeArray": jsonResult["totalTimeTaken"] ? [jsonResult["totalTimeTaken"]] : []
 				}
-				if (chartResult[buildNumber]) {
+				if(chartResult[buildNumber]) {
 					var tempChartBuildResult = chartResult[buildNumber];
 					var result = {
 						"Runtime": tempChartBuildResult["Runtime"] + tempBuildResult["Runtime"],
@@ -320,7 +320,7 @@ function getTestRows() {
 		return !($j($j(elem).children().get(2)).children().length > 0);
 	}));
 	var isSomethingChecked = $j("#tree").find(":checked").length > 0;
-	if (isSomethingChecked) {
+	if(isSomethingChecked) {
 		$testRows = $testRows.filter(function(index, elem) {
 			return $j(elem).find(":checked").length > 0;
 		});
@@ -497,7 +497,7 @@ function getPieChartConfig(inputData, resultTitle) {
 	var pieChart = {
 		chart: {
 			plotBackgroundColor: null,
-			plotBorderWidth: 1,//null,
+			plotBorderWidth: 1,
 			plotShadow: false
 		},
 		credits: {

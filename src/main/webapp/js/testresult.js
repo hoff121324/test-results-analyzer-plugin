@@ -1,5 +1,6 @@
 var colTemplate = "{'cellClass':'col1','value':'build20','header':'20','title':'20'}";
 var treeMarkup = "";
+var coverageData = "";
 var reevaluateChartData = true;
 var displayValues = false;
 
@@ -207,6 +208,7 @@ function populateTemplate() {
 
 	remoteAction.getTreeResult(noOfBuilds, showCompileFail, $j.proxy(function(t) {
 		var itemsResponse = t.responseObject();
+        coverageData = itemsResponse.coverage;
 		treeMarkup = analyzerTemplate(itemsResponse);
 		$j(".table").html(treeMarkup);
 		addEvents();

@@ -233,7 +233,7 @@ function addEvents() {
 	var toggleHandler = function (node) {
 		var parent = $j(node).parent().parent(".table-row").attr("parentclass");
 		var nodeName = $j(node).parent().parent(".table-row").attr("name");
-		var childLocator = "[parentclass='" + parent + "-" + nodeName + "']";
+		var childLocator = ".table-row[parentclass='" + parent + "-" + nodeName + "']";
 		var childNodeClass = (parent + "." + nodeName).replace(/\./g, "-").replace(/\s/g, "-");
 		if($j(node).hasClass('icon-plus-sign')) {
 			$j(node).removeClass('icon-plus-sign');
@@ -251,7 +251,7 @@ function addEvents() {
 		childs.each(function () {
 			var parent = $j(this).parent().parent(".table-row").attr("parentclass");
 			var nodeName = $j(this).parent().parent(".table-row").attr("name");
-			var childLocator = "[parentclass='" + parent + "-" + nodeName + "']";
+			var childLocator = ".table-row[parentclass='" + parent + "-" + nodeName + "']";
 
 			if($j(this).find('.icon').hasClass('icon-minus-sign')) {
 				$j(this).find('.icon').removeClass('icon-minus-sign');

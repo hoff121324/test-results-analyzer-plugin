@@ -203,6 +203,16 @@ public class HighChartTest {
     }
 
     /**
+     *  @brief Helper method to clear a text box
+     *  Sending backspace while the element is not empty doesn't seem to work correctly
+     */
+    public void clearTextBox(WebElement element) {
+        for(int i=0; i<20; i++) {
+             element.sendKeys(Keys.BACK_SPACE);
+        }
+	}
+
+    /**
      * @brief Goes to configuration page and sets text associated with given input element
      */
     public void setConfigurationText(String element, String text) throws Exception {
@@ -213,8 +223,7 @@ public class HighChartTest {
                 )
         );
         WebElement passedStatusText = driver.findElement(By.name(element));
-        passedStatusText.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        passedStatusText.sendKeys(Keys.BACK_SPACE);
+		clearTextBox(passedStatusText);
         passedStatusText.sendKeys(text);
         WebElement noOfBuilds = driver.findElement(By.name("noOfBuilds"));
         noOfBuilds.sendKeys(Keys.ENTER);

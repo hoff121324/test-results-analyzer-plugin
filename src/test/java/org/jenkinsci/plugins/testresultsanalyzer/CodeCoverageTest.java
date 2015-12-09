@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class CodeCoverageTest {
     }
 
     public void setCoverageCharts() {
+		openSettingsMenu();
         setChartsHelper("Code Coverage");
     }
 
@@ -89,7 +91,7 @@ public class CodeCoverageTest {
         //assert
         assertNotEquals(null, lineChart.getAttribute("data-highcharts-chart"));
         assertNotEquals("", lineChart.getAttribute("innerHTML"));
-        assertNotEquals(0, js.executeScript("return jQuery('#linechart:contains(\"Runtime\")').size();"));
+        assertNotEquals(0, js.executeScript("return jQuery('#linechart:contains(\"Code Coverage\")').size();"));
         //verify that other graphs are not generated
         assertEquals("", barChart.getAttribute("innerHTML"));
         assertEquals("", pieChart.getAttribute("innerHTML"));
@@ -109,15 +111,35 @@ public class CodeCoverageTest {
 
         //act
         setCoverageCharts();
-        WebElement svgElement = driver.findElement(By.className("highcharts-tooltip"));
-        List<WebElement> codeResult = svgElement.findElement(By.name("text")).findElements(By.name("tspan"));
+		WebElement svgElement = driver.findElement(By.cssSelector("#linechart > .highcharts-container > svg > .highcharts-series-group > .highcharts-markers > path"));
+        WebElement toolTip = driver.findElement(By.cssSelector("#linechart > .highcharts-container > svg > .highcharts-tooltip"));
+		Actions act = new Actions(driver);
+		act.moveToElement(svgElement).perform();
+		wait.until(ExpectedConditions.visibilityOf(toolTip));
+        List<WebElement> codeResult = toolTip.findElement(By.cssSelector("text")).findElements(By.cssSelector("tspan"));
 
         //assert
-        assertEquals(codeResult.get(1), expectedClasses);
-        assertEquals(codeResult.get(2), expectedConditionals);
-        assertEquals(codeResult.get(3), expectedFiles);
-        assertEquals(codeResult.get(4), expectedLines);
-        assertEquals(codeResult.get(5), expectedMethods);
-        assertEquals(codeResult.get(6), expectedPackages);
+        assertEquals(expectedClasses, codeResult.get(3).getText());
+        assertEquals(expectedConditionals, codeResult.get(6).getText());
+        assertEquals(expectedFiles, codeResult.get(9).getText());
+        assertEquals(expectedLines, codeResult.get(12).getText());
+        assertEquals(expectedMethods, codeResult.get(15).getText());
+        assertEquals(expectedPackages, codeResult.get(18).getText());
     }
+
+	/**
+	 *  @brief helper method for above methods
+	 *  Blocks until the options menu is fully open
+	 */
+	public void openSettingsMenu() {
+		WebElement menu = driver.findElement(By.id("settingsmenu"));
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("settingsmenubutton")));
+
+		if(!menu.isDisplayed()) {
+			//clicking the settings menu button displays the options menu
+			driver.findElement(By.id("settingsmenubutton")).click();
+		}
+		//wait 2 seconds for the options menu to fully open
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("getbuildreport")));
+	}
 }

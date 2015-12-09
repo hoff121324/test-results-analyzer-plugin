@@ -219,8 +219,6 @@ var $j = jQuery.noConflict();
 		populateTemplate();
 	});
 
-	jQuery("#filterButton").click(applyFilter);
-
 	jQuery(document).ready(function () {
 		jQuery("#allnoofbuilds")[0].checked = ${it.showAllBuilds}; //				defaultallnoofbuilds;
 		jQuery("#show-durations")[0].checked = ${it.showBuildTime}; //				defaultShowBuildTime;
@@ -228,6 +226,7 @@ var $j = jQuery.noConflict();
 		jQuery("#bargraph")[0].checked = ${it.showBarGraph}; //					defaultShowBarGraph;
 		jQuery("#piegraph")[0].checked = ${it.showPieGraph}; //					defaultShowPieGraph;
 		jQuery("#noofbuilds").attr('disabled', ${it.showAllBuilds});
+		jQuery("#filterButton").click(applyFilter);
 
 		if(${it.chartDataType}) {
 			jQuery("#chartDataType").val("runtime");

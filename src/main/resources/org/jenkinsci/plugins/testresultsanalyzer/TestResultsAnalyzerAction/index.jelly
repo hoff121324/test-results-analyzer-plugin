@@ -85,21 +85,59 @@ var $j = jQuery.noConflict();
 	<br/>
 	<br/>
 	<div class="toolContainer">
-		Filter Tests by Status (Only Latest Build):
-		<input id = "failFilter" type="checkbox" checked="true" onchange="filterTests()"/> FAILED
-		<input id = "passFilter" type="checkbox" checked="true" onchange="filterTests()"/> PASSED
-		<input id = "skipFilter" type="checkbox" checked="true" onchange="filterTests()"/> SKIPPED
-		<br/>
+		<div id="filterOptionsPane">
+		<table>
+				<tr>
+					<td>
+					Show tests where
+					</td>
+					<td>
+						<select id="FilterSelectBy" onchange="showRelevantFilterOptions();">
+				  			<option value="STATUS">Status</option>
+				  			<option value="RUNTIME">Runtime</option>
+						</select>
+					</td>
+					<td>
+						is
+					</td>
+					<td>
+						<div id="StatusFilterOptions">
+							<input id="statusFilterPassed" type="checkbox" checked="true" value="PASSED"/> PASSED
+							<br/>
+							<input id="statusFilterFailed" type="checkbox" checked="true" value="FAILED"/> FAILED
+							<br/>
+							<input id="statusFilterFlaked" type="checkbox" checked="true" value="FLAKED"/> FLAKED
+							<br/>
+							<input id="statusFilterSkipped" type="checkbox" checked="true" value="SKIPPED"/> SKIPPED
+						</div>
+						<select id="RuntimeFilterOptions" style="display:none">
+							  <option value="GreaterThanEqualTo">&gt;=</option>
+							  <option value="LessThanEqualTo">&lt;=</option>
+						</select>
+					</td>
+					<td>
+						<input id="RuntimeFilterVal" style="display:none" type="text" placeholder="seconds"/>
+					</td>
+					<td>
+						in build # 
+					</td>
+					<td>
+						<select id="BuildNumber">
+						</select>
+					</td>
+				</tr>
+			</table>
+			<button id="filterButton">Apply</button>
+		</div>
+
 		<div id="filterSearchBox">
-			Filter Tests: <input id="filter" class="table-filter" type="text" placeholder="Filter" onkeyup="filterTests()"/>
+			Search: <input id="filter" class="table-filter" type="text" placeholder="Test/Class/Package" onkeyup="searchTests()"/>
 		</div>
-		<br/> <br/>
-		<button id="downloadCSV">Download Test (CSV)</button>
+		<button id="expandall">Expand All</button>
+		<button id="collapseall">Collapse All</button>
 		<div class="extrabuttons">
-			<button id="expandall">Expand All</button>
-			<button id="collapseall">Collapse All</button>
+			<button id="downloadCSV">Download Test (CSV)</button>
 		</div>
-		<br/> <br/>
 	</div>
 
 	<div id="tree">
@@ -180,6 +218,8 @@ var $j = jQuery.noConflict();
 	jQuery("#getbuildreport").click(function () {
 		populateTemplate();
 	});
+
+	jQuery("#filterButton").click(applyFilter);
 
 	jQuery(document).ready(function () {
 		jQuery("#allnoofbuilds")[0].checked = ${it.showAllBuilds}; //				defaultallnoofbuilds;

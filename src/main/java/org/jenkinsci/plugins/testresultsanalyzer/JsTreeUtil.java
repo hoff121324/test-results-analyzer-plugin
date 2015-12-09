@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
+import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 import hudson.model.User;
 
 import java.util.List;

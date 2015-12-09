@@ -4,6 +4,10 @@ import hudson.tasks.test.TestResult;
 
 public class PackageResultData extends ResultData {
 
+	public PackageResultData(){
+		super();
+	}
+
 	public PackageResultData(TestResult packageResult, String url) {
 		super(packageResult, url);
 	}

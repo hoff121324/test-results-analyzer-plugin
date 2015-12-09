@@ -6,6 +6,10 @@ import java.lang.reflect.Method;
 
 public class TestCaseResultData extends ResultData {
 
+	public TestCaseResultData(){
+		super();
+	}
+
 	public TestCaseResultData(TestResult testResult, String url) {
 		setName(testResult.getName());
 		boolean doTestNg = testResult.getClass().getName().equals("hudson.plugins.testng.results.MethodResult");

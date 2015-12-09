@@ -171,6 +171,7 @@ public class OptionsTest {
 
 		//filter tests
 		WebElement searchbar = driver.findElement(By.id("filter"));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.className("base-edu_illinois_cs427_mp3")));
 		WebElement row = driver.findElement(By.className("base-edu_illinois_cs427_mp3"));
 		WebElement failFilter = driver.findElement(By.id("statusFilterFailed"));
 		assertTrue(row.isDisplayed());

@@ -16,7 +16,7 @@ import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 
 public class JsTreeUtil {
 
-	public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users ) {
+	public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users, Map<Integer, CoverageResultDTO> coverageResults) {
 		JSONObject tree = new JSONObject();
 
 		JSONArray buildJson = new JSONArray();

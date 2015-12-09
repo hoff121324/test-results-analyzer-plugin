@@ -179,6 +179,7 @@ var $j = jQuery.noConflict();
 		"skipped" : "${it.skippedStatusColor}",
 		"total" : "${it.totalStatusColor}",
 		"runtime" : "${it.runtimeStatusColor}",
+		"flaked" : "#c034ff",
 		"methods" : "#800080",
 		"packages" : "#FF00FF",
 		"na" :""

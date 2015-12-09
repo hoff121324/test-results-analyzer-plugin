@@ -119,6 +119,9 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 		return jsonArray;
 	}
 
+	/**
+	 *  @brief Determines which builds will have data send to the front end
+	 */
 	public List<Integer> getBuildList(int noOfBuilds, String showCompileFail) {
 		boolean showFail = showCompileFail.equals("show");
 
@@ -222,12 +225,17 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
         CoberturaBuildAction buildAction = null;
           //Check if Project has Parent (example: MavenModule has a parent of MavenModuleSet)
         if(project.getParent() != null) {
-            //Get the specific build as seen by the top level project
-            AbstractBuild tempBuild = ((AbstractProject) project.getParent()).getBuildByNumber(buildNumber);
-            if(tempBuild != null) {
-                //Get the Cobertura build action from the specific build (if possible)
-                buildAction = tempBuild.getAction(CoberturaBuildAction.class);
-            }
+			try {
+				//Get the specific build as seen by the top level project
+				AbstractBuild tempBuild = ((AbstractProject) project.getParent()).getBuildByNumber(buildNumber);
+				if(tempBuild != null) {
+					//Get the Cobertura build action from the specific build (if possible)
+					buildAction = tempBuild.getAction(CoberturaBuildAction.class);
+				}
+			} catch(Exception e) {
+				//In case the above system fails, fall back to non-maven support
+				buildAction = build.getAction(CoberturaBuildAction.class);
+			}
         } else {
             buildAction = build.getAction(CoberturaBuildAction.class);
         }

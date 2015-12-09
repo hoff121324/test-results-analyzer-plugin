@@ -56,7 +56,7 @@ function generateRuntimeLineChart() {
 		if(chartResult.hasOwnProperty(key)){
 			var buildResult = chartResult[key];
 			chartCategories.push(key);
-			chartData["Runtime"].push(buildResult["Runtime"]);
+			chartData["Runtime"].push(Math.round(eval(buildResult["Runtime"])*1000)/1000);
 		}
 	}
 	$j(function () {
@@ -91,7 +91,7 @@ function generateRuntimePieChart(inputData) {
 		['slow',   slow],
 		['medium', medi]
 	];
-	$j("#piechart").highcharts(getPieChartConfig(inputData, resultTitle))
+	$j("#piechart").highcharts(getRuntimePieChartConfig(inputData, resultTitle))
 }
 
 function getRuntimeLineChartConfig(chartCategories, chartData) {
@@ -139,6 +139,7 @@ function getRuntimeLineChartConfig(chartCategories, chartData) {
 		},
 		tooltip: {
 			headerFormat: '<b>Build no: {point.x}</b><br>',
+			valueSuffix: ' sec',
 			shared: true,
 			crosshairs: true
 		},
@@ -628,6 +629,53 @@ function getPieChartConfig(inputData, resultTitle) {
 			text: resultTitle ? resultTitle : 'Build details for all'
 		},
 		tooltip: {
+			pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+					enabled: true,
+					format: '<b>{point.name}</b>: {point.percentage:.2f} %',
+					style: {
+						color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+					}
+				}
+			}
+		},
+		colors : [
+			statusColors["passed"],
+			statusColors["failed"],
+			statusColors["flaked"],
+			statusColors["skipped"],
+			statusColors["total"]
+		],
+		series: [
+			{
+				type: 'pie',
+				name: 'Build Detail',
+				data: inputData
+			}
+		]
+	}
+	return pieChart;
+}
+
+function getRuntimePieChartConfig(inputData, resultTitle) {
+	var pieChart = {
+		chart: {
+			plotBackgroundColor: null,
+			plotBorderWidth: 1,
+			plotShadow: false
+		},
+		credits: {
+			enabled: false
+		},
+		title: {
+			text: resultTitle ? resultTitle : 'Build details for all'
+		},
+		tooltip: {
 			pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
 		},
 		plotOptions: {
@@ -646,9 +694,7 @@ function getPieChartConfig(inputData, resultTitle) {
 		colors : [
 			statusColors["passed"],
 			statusColors["failed"],
-			statusColors["flaked"],
-			statusColors["skipped"],
-			statusColors["total"]
+			statusColors["skipped"]
 		],
 		series: [
 			{

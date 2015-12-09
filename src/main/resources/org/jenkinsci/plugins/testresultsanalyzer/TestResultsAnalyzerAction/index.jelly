@@ -25,275 +25,275 @@ var $j = jQuery.noConflict();
 
 <p id="noBuilds" style="display: none;"></p>
 <div id="mainContainer" style="display: none;">
-	<button id="settingsmenubutton">Options</button>
-	<div id="settingsmenu" style="display: none;">
-		<table>
-			<tr>
-				<td>Number of builds:</td>
-				<td>
-					<input id="noofbuilds" type="number" value="${it.noOfBuilds}" min="1" step="1" disabled="${it.showAllBuilds}"/>
-					(all: <input id="allnoofbuilds" type="checkbox" checked="${it.showAllBuilds}" />)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					Show failed builds:
-				</td>
-				<td>
-					<input id="showcompilefail" type="checkbox" />
-				</td>
-			</tr>
-			<tr>
-				<td>Display run time for each test:</td>
-				<td><input type="checkbox" id="show-durations" name="show-durations" checked="${it.showBuildTime}"/></td>
-			</tr>
-			<tr>
-				<td>Chart type:</td>
-				<td>
-					<input id="linegraph" type="checkbox" checked="${it.showLineGraph}" /> Line
-					<input id="bargraph" type="checkbox" checked="${it.showBarGraph}" /> Bar
-					<input id="piegraph" type="checkbox" checked="${it.showPieGraph}" /> Pie
-				</td>
-			</tr>
-			<tr>
-				<td>Chart Data Type:</td>
-				<td>
-					<select id="chartDataType">
-						<option value="passfail">Passes/Failures</option>
-						<option value="runtime">Test Runtimes</option>
-						<option value="codeCoverage">Code Coverage</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Low threshold for run time analysis:</td>
-				<td>
-					<input id="runTimeLowThreshold" type="number" value="${it.runTimeLowThreshold}" min="0" step="any" />
-				</td>
-			</tr>
-			<tr>
-				<td>High threshold for run time analysis:</td>
-				<td>
-					<input id="runTimeHighThreshold" type="number" value="${it.runTimeHighThreshold}" min="${it.runTimeLowThreshold}" step="any" />
-				</td>
-			</tr>
-		</table>
-		<div>
-			<button id="getbuildreport">Update</button>
-		</div>
-	</div>
-	<br/>
-	<br/>
-	<br/>
-	<div class="toolContainer">
-		<div id="filterOptionsPane">
-		<table>
-				<tr>
-					<td>
-					Show tests where
-					</td>
-					<td>
-						<select id="FilterSelectBy" onchange="showRelevantFilterOptions();">
-				  			<option value="STATUS">Status</option>
-				  			<option value="RUNTIME">Runtime</option>
-						</select>
-					</td>
-					<td>
-						is
-					</td>
-					<td>
-						<div id="StatusFilterOptions">
-							<input id="statusFilterPassed" type="checkbox" checked="true" value="PASSED"/> PASSED
-							<br/>
-							<input id="statusFilterFailed" type="checkbox" checked="true" value="FAILED"/> FAILED
-							<br/>
-							<input id="statusFilterFlaked" type="checkbox" checked="true" value="FLAKED"/> FLAKED
-							<br/>
-							<input id="statusFilterSkipped" type="checkbox" checked="true" value="SKIPPED"/> SKIPPED
-						</div>
-						<select id="RuntimeFilterOptions" style="display:none">
-							  <option value="GreaterThanEqualTo">&gt;=</option>
-							  <option value="LessThanEqualTo">&lt;=</option>
-						</select>
-					</td>
-					<td>
-						<input id="RuntimeFilterVal" style="display:none" type="text" placeholder="seconds"/>
-					</td>
-					<td>
-						in build # 
-					</td>
-					<td>
-						<select id="BuildNumber">
-						</select>
-					</td>
-				</tr>
-			</table>
-			<button id="filterButton">Apply</button>
-		</div>
+    <button id="settingsmenubutton">Options</button>
+    <div id="settingsmenu" style="display: none;">
+        <table>
+            <tr>
+                <td>Number of builds:</td>
+                <td>
+                    <input id="noofbuilds" type="number" value="${it.noOfBuilds}" min="1" step="1" disabled="${it.showAllBuilds}"/>
+                    (all: <input id="allnoofbuilds" type="checkbox" checked="${it.showAllBuilds}" />)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Show failed builds:
+                </td>
+                <td>
+                    <input id="showcompilefail" type="checkbox" />
+                </td>
+            </tr>
+            <tr>
+                <td>Display run time for each test:</td>
+                <td><input type="checkbox" id="show-durations" name="show-durations" checked="${it.showBuildTime}"/></td>
+            </tr>
+            <tr>
+                <td>Chart type:</td>
+                <td>
+                    <input id="linegraph" type="checkbox" checked="${it.showLineGraph}" /> Line
+                    <input id="bargraph" type="checkbox" checked="${it.showBarGraph}" /> Bar
+                    <input id="piegraph" type="checkbox" checked="${it.showPieGraph}" /> Pie
+                </td>
+            </tr>
+            <tr>
+                <td>Chart Data Type:</td>
+                <td>
+                    <select id="chartDataType">
+                        <option value="passfail">Passes/Failures</option>
+                        <option value="runtime">Test Runtimes</option>
+                        <option value="codeCoverage">Code Coverage</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Low threshold for run time analysis:</td>
+                <td>
+                    <input id="runTimeLowThreshold" type="number" value="${it.runTimeLowThreshold}" min="0" step="any" />
+                </td>
+            </tr>
+            <tr>
+                <td>High threshold for run time analysis:</td>
+                <td>
+                    <input id="runTimeHighThreshold" type="number" value="${it.runTimeHighThreshold}" min="${it.runTimeLowThreshold}" step="any" />
+                </td>
+            </tr>
+        </table>
+        <div>
+            <button id="getbuildreport">Update</button>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <div class="toolContainer">
+        <div id="filterOptionsPane">
+        <table>
+                <tr>
+                    <td>
+                    Show tests where
+                    </td>
+                    <td>
+                        <select id="FilterSelectBy" onchange="showRelevantFilterOptions();">
+                            <option value="STATUS">Status</option>
+                            <option value="RUNTIME">Runtime</option>
+                        </select>
+                    </td>
+                    <td>
+                        is
+                    </td>
+                    <td>
+                        <div id="StatusFilterOptions">
+                            <input id="statusFilterPassed" type="checkbox" checked="true" value="PASSED"/> PASSED
+                            <br/>
+                            <input id="statusFilterFailed" type="checkbox" checked="true" value="FAILED"/> FAILED
+                            <br/>
+                            <input id="statusFilterFlaked" type="checkbox" checked="true" value="FLAKED"/> FLAKED
+                            <br/>
+                            <input id="statusFilterSkipped" type="checkbox" checked="true" value="SKIPPED"/> SKIPPED
+                        </div>
+                        <select id="RuntimeFilterOptions" style="display:none">
+                              <option value="GreaterThanEqualTo">&gt;=</option>
+                              <option value="LessThanEqualTo">&lt;=</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input id="RuntimeFilterVal" style="display:none" type="text" placeholder="seconds"/>
+                    </td>
+                    <td>
+                        in build # 
+                    </td>
+                    <td>
+                        <select id="BuildNumber">
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <button id="filterButton">Apply</button>
+        </div>
 
-		<div id="filterSearchBox">
-			Search: <input id="filter" class="table-filter" type="text" placeholder="Test/Class/Package" onkeyup="searchTests()"/>
-		</div>
-		<button id="expandall">Expand All</button>
-		<button id="collapseall">Collapse All</button>
-		<div class="extrabuttons">
-			<button id="downloadCSV">Download Test (CSV)</button>
-		</div>
-	</div>
+        <div id="filterSearchBox">
+            Search: <input id="filter" class="table-filter" type="text" placeholder="Test/Class/Package" onkeyup="searchTests()"/>
+        </div>
+        <button id="expandall">Expand All</button>
+        <button id="collapseall">Collapse All</button>
+        <div class="extrabuttons">
+            <button id="downloadCSV">Download Test (CSV)</button>
+        </div>
+    </div>
 
-	<div id="tree">
-		<div class="table">
-			<p>Loading...</p>
-		</div>
-	</div>
+    <div id="tree">
+        <div class="table">
+            <p>Loading...</p>
+        </div>
+    </div>
 
-	<br />
-	<br />
+    <br />
+    <br />
 
-	<div id="charts">
-		<div id="linechart">
+    <div id="charts">
+        <div id="linechart">
 
-		</div>
-		<br/>
+        </div>
+        <br/>
 
-		<div id="piechart">
+        <div id="piechart">
 
-		</div>
-		<br/>
+        </div>
+        <br/>
 
-		<div id="barchart">
+        <div id="barchart">
 
-		</div>
+        </div>
 
-	</div>
+    </div>
 
-	<div id="builddetail">
+    <div id="builddetail">
 
-	</div>
+    </div>
 </div>
 
 <script>
-	var statusColors = {
-		"passed" : "${it.passedStatusColor}",
-		"failed" : "${it.failedStatusColor}",
-		"skipped" : "${it.skippedStatusColor}",
-		"total" : "${it.totalStatusColor}",
-		"runtime" : "${it.runtimeStatusColor}",
-		"flaked" : "#c034ff",
-		"methods" : "#800080",
-		"packages" : "#FF00FF",
-		"na" :""
-	};
+    var statusColors = {
+        "passed": "${it.passedStatusColor}",
+        "failed": "${it.failedStatusColor}",
+        "skipped": "${it.skippedStatusColor}",
+        "total": "${it.totalStatusColor}",
+        "runtime": "${it.runtimeStatusColor}",
+        "flaked": "#c034ff",
+        "methods": "#800080",
+        "packages": "#FF00FF",
+        "na": ""
+    };
 
-	var statusText = {
-		PASSED : "${it.passedStatusText}",
-		FAILED : "${it.failedStatusText}",
-		SKIPPED : "${it.skippedStatusText}"
-	};
+    var statusText = {
+        PASSED: "${it.passedStatusText}",
+        FAILED: "${it.failedStatusText}",
+        SKIPPED: "${it.skippedStatusText}"
+    };
 
-	jQuery("document").ready(function () {
-		remoteAction.getTotalNoOfBuilds(function (t) {
-			if(t.responseObject()!= 0) {							//if there are builds display plugin
-				jQuery("#mainContainer").css("display", "block");
-			}
-			else													//else show a message that there are no builds.
-			{
-				jQuery("#noBuilds").text("There are no builds. Please build your project to use Test Result Analyzer.");
-				jQuery("#noBuilds").css("display", "block");
-			}
-		})
-	});
-	function generateCharts() {
-		var chartType = {
-			type: jQuery("#chartDataType").val(),
-			line: jQuery('#linegraph').is(':checked'),
-			bar: jQuery('#bargraph').is(':checked'),
-			pie: jQuery('#piegraph').is(':checked')
-		};
-		generateChart(chartType);
-	}
+    jQuery("document").ready(function () {
+        remoteAction.getTotalNoOfBuilds(function (t) {
+            if (t.responseObject() != 0) {                          //if there are builds display plugin
+                jQuery("#mainContainer").css("display", "block");
+            }
+            else                                                    //else show a message that there are no builds.
+            {
+                jQuery("#noBuilds").text("There are no builds. Please build your project to use Test Result Analyzer.");
+                jQuery("#noBuilds").css("display", "block");
+            }
+        })
+    });
+    function generateCharts() {
+        var chartType = {
+            type: jQuery("#chartDataType").val(),
+            line: jQuery('#linegraph').is(':checked'),
+            bar: jQuery('#bargraph').is(':checked'),
+            pie: jQuery('#piegraph').is(':checked')
+        };
+        generateChart(chartType);
+    }
 
-	jQuery("#downloadCSV").click(function () {
-		remoteAction.getExportCSV(displayValues, function (t) {
-			download("Test Results.csv", t.responseObject());
-		})
-	});
+    jQuery("#downloadCSV").click(function () {
+        remoteAction.getExportCSV(displayValues, function (t) {
+            download("Test Results.csv", t.responseObject());
+        })
+    });
 
-	jQuery("#getbuildreport").click(function () {
-		populateTemplate();
-	});
+    jQuery("#getbuildreport").click(function () {
+        populateTemplate();
+    });
 
-	jQuery(document).ready(function () {
-		jQuery("#allnoofbuilds")[0].checked = ${it.showAllBuilds}; //				defaultallnoofbuilds;
-		jQuery("#show-durations")[0].checked = ${it.showBuildTime}; //				defaultShowBuildTime;
-		jQuery("#linegraph")[0].checked = ${it.showLineGraph}; //					defaultShowLineGraph;
-		jQuery("#bargraph")[0].checked = ${it.showBarGraph}; //					defaultShowBarGraph;
-		jQuery("#piegraph")[0].checked = ${it.showPieGraph}; //					defaultShowPieGraph;
-		jQuery("#noofbuilds").attr('disabled', ${it.showAllBuilds});
-		jQuery("#filterButton").click(applyFilter);
+    jQuery(document).ready(function () {
+        jQuery("#allnoofbuilds")[0].checked = ${it.showAllBuilds}; //               defaultallnoofbuilds;
+        jQuery("#show-durations")[0].checked = ${it.showBuildTime}; //              defaultShowBuildTime;
+        jQuery("#linegraph")[0].checked = ${it.showLineGraph}; //                   defaultShowLineGraph;
+        jQuery("#bargraph")[0].checked = ${it.showBarGraph}; //                 defaultShowBarGraph;
+        jQuery("#piegraph")[0].checked = ${it.showPieGraph}; //                 defaultShowPieGraph;
+        jQuery("#noofbuilds").attr('disabled', ${it.showAllBuilds});
+        jQuery("#filterButton").click(applyFilter);
 
-		if("${it.chartDataType}" === "runtime") {
-			jQuery("#chartDataType").val("runtime");
-			jQuery("#bargraph").attr('disabled', true);
-		} else if ("${it.chartDataType}" === "codeCoverage") {
-			jQuery("#chartDataType").val("codeCoverage");
-			jQuery("#bargraph").attr('disabled', true);
-			jQuery("#piegraph").attr('disabled', true);
-			jQuery("#runTimeLowThreshold").attr('disabled', true);
-			jQuery("#runTimeHighThreshold").attr('disabled', true);
-		} else {
-			jQuery("#chartDataType").val("passfail");
-			jQuery("#runTimeLowThreshold").attr('disabled', true);
-			jQuery("#runTimeHighThreshold").attr('disabled', true);
-		}
+        if ("${it.chartDataType}" === "runtime") {
+            jQuery("#chartDataType").val("runtime");
+            jQuery("#bargraph").attr('disabled', true);
+        } else if ("${it.chartDataType}" === "codeCoverage") {
+            jQuery("#chartDataType").val("codeCoverage");
+            jQuery("#bargraph").attr('disabled', true);
+            jQuery("#piegraph").attr('disabled', true);
+            jQuery("#runTimeLowThreshold").attr('disabled', true);
+            jQuery("#runTimeHighThreshold").attr('disabled', true);
+        } else {
+            jQuery("#chartDataType").val("passfail");
+            jQuery("#runTimeLowThreshold").attr('disabled', true);
+            jQuery("#runTimeHighThreshold").attr('disabled', true);
+        }
 
-		populateTemplate(displayValues);
-	});
+        populateTemplate(displayValues);
+    });
 
-	jQuery("#expandall").click(function () {
-		expandAll();
-	});
+    jQuery("#expandall").click(function () {
+        expandAll();
+    });
 
-	jQuery("#collapseall").click(function () {
-		collapseAll();
-	});
+    jQuery("#collapseall").click(function () {
+        collapseAll();
+    });
 
-	jQuery("#generatechart").click(generateCharts);
+    jQuery("#generatechart").click(generateCharts);
 
-	jQuery("#hidecharts").click(function () {
-		resetCharts();
-	});
+    jQuery("#hidecharts").click(function () {
+        resetCharts();
+    });
 
-	jQuery("#settingsmenubutton").click(function () {
-		jQuery("#settingsmenu").slideToggle();
-	});
+    jQuery("#settingsmenubutton").click(function () {
+        jQuery("#settingsmenu").slideToggle();
+    });
 
-	jQuery("#allnoofbuilds").change(function () {
-		jQuery("#noofbuilds").attr('disabled', this.checked);
-	});
+    jQuery("#allnoofbuilds").change(function () {
+        jQuery("#noofbuilds").attr('disabled', this.checked);
+    });
 
-	jQuery("#chartDataType").change(function (e) {
-		jQuery("#bargraph").attr('disabled', e.target.value !== "passfail");
-		jQuery("#piegraph").attr('disabled', e.target.value == "codeCoverage");
-		jQuery("#runTimeLowThreshold").attr('disabled', e.target.value !== "runtime");
-		jQuery("#runTimeHighThreshold").attr('disabled', e.target.value !== "runtime");
-	});
+    jQuery("#chartDataType").change(function (e) {
+        jQuery("#bargraph").attr('disabled', e.target.value !== "passfail");
+        jQuery("#piegraph").attr('disabled', e.target.value == "codeCoverage");
+        jQuery("#runTimeLowThreshold").attr('disabled', e.target.value !== "runtime");
+        jQuery("#runTimeHighThreshold").attr('disabled', e.target.value !== "runtime");
+    });
 
-	function download(filename, text) {
-		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-		element.setAttribute('download', filename);
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
 
-		element.style.display = 'none';
-		document.body.appendChild(element);
+        element.style.display = 'none';
+        document.body.appendChild(element);
 
-		element.click();
+        element.click();
 
-		document.body.removeChild(element);
-	}
+        document.body.removeChild(element);
+    }
 </script>
 <style>
-	.failed {
+    .failed {
         background-color: ${it.failedStatusColor};
     }
 

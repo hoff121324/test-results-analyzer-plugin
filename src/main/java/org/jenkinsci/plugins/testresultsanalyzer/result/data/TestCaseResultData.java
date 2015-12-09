@@ -6,49 +6,48 @@ import java.lang.reflect.Method;
 
 public class TestCaseResultData extends ResultData {
 
-	public TestCaseResultData(){
-		super();
-	}
+    public TestCaseResultData() {
+        super();
+    }
 
-	public TestCaseResultData(TestResult testResult, String url) {
-		setName(testResult.getName());
-		boolean doTestNg = testResult.getClass().getName().equals("hudson.plugins.testng.results.MethodResult");
+    public TestCaseResultData(TestResult testResult, String url) {
+        setName(testResult.getName());
+        boolean doTestNg = testResult.getClass().getName().equals("hudson.plugins.testng.results.MethodResult");
 
-		if(doTestNg) {
-			try {
-				Method method = testResult.getClass().getMethod("getStatus");
-				Object returnValue = method.invoke(testResult);
-				if (returnValue instanceof String) {
-					String status = ((String) returnValue).toLowerCase();
+        if (doTestNg) {
+            try {
+                Method method = testResult.getClass().getMethod("getStatus");
+                Object returnValue = method.invoke(testResult);
+                if (returnValue instanceof String) {
+                    String status = ((String) returnValue).toLowerCase();
 
-					setPassed(status.startsWith("pass"));
-					setSkipped(status.startsWith("skip"));
-					setTotalTests(1);
-					setTotalFailed(status.startsWith("fail") ? 1 : 0);
-					setTotalPassed(status.startsWith("pass") ? 1 : 0);
-					setTotalSkipped(status.startsWith("skip") ? 1 : 0);
-				}
-			}
-			catch(Exception e) {
-				// fallback to non testng code
-				doTestNg = false;
-			}
-		}
+                    setPassed(status.startsWith("pass"));
+                    setSkipped(status.startsWith("skip"));
+                    setTotalTests(1);
+                    setTotalFailed(status.startsWith("fail") ? 1 : 0);
+                    setTotalPassed(status.startsWith("pass") ? 1 : 0);
+                    setTotalSkipped(status.startsWith("skip") ? 1 : 0);
+                }
+            } catch (Exception e) {
+                // fallback to non testng code
+                doTestNg = false;
+            }
+        }
 
-		if(!doTestNg) {
-			setPassed(testResult.isPassed());
-			setSkipped(testResult.getSkipCount() == testResult.getTotalCount());
-			setTotalTests(testResult.getTotalCount());
-			setTotalFailed(testResult.getFailCount());
-			setTotalPassed(testResult.getPassCount());
-			setTotalSkipped(testResult.getSkipCount());
-		}
-		setTotalTimeTaken(testResult.getDuration());
-		setUrl(url);
-		evaluateStatus();
+        if (!doTestNg) {
+            setPassed(testResult.isPassed());
+            setSkipped(testResult.getSkipCount() == testResult.getTotalCount());
+            setTotalTests(testResult.getTotalCount());
+            setTotalFailed(testResult.getFailCount());
+            setTotalPassed(testResult.getPassCount());
+            setTotalSkipped(testResult.getSkipCount());
+        }
+        setTotalTimeTaken(testResult.getDuration());
+        setUrl(url);
+        evaluateStatus();
 
-		if("FAILED".equalsIgnoreCase(getStatus())) {
-			setFailureMessage(testResult.getErrorStackTrace());
-		}
-	}
+        if ("FAILED".equalsIgnoreCase(getStatus())) {
+            setFailureMessage(testResult.getErrorStackTrace());
+        }
+    }
 }

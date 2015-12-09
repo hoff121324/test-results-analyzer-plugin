@@ -7,13 +7,9 @@ import hudson.plugins.cobertura.targets.CoverageMetric;
 import hudson.plugins.cobertura.targets.CoverageResult;
 import hudson.tasks.junit.PackageResult;
 import hudson.tasks.junit.TestResult;
-import hudson.tasks.test.TabulatedResult;
 import hudson.tasks.test.AbstractTestResultAction;
+import hudson.tasks.test.TabulatedResult;
 import hudson.util.RunList;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.*;
-
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -25,226 +21,230 @@ import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.TestCaseInfo;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.*;
+
 public class TestResultsAnalyzerAction extends Actionable implements Action {
-	@SuppressWarnings("rawtypes")
-	AbstractProject project;
-	private List<Integer> builds = new ArrayList<Integer>();
-	private List <String> userInBuildChange = new ArrayList<String>();
-	private Vector<Integer> compileFailedBuilds = new Vector<Integer>();
+    @SuppressWarnings("rawtypes")
+    AbstractProject project;
+    ResultInfo resultInfo;
+    List<String> userString;
+    HashMap<Integer, CoverageResultDTO> coverageResults = new HashMap<Integer, CoverageResultDTO>();
+    private List<Integer> builds = new ArrayList<Integer>();
+    private List<String> userInBuildChange = new ArrayList<String>();
+    private Vector<Integer> compileFailedBuilds = new Vector<Integer>();
 
-	ResultInfo resultInfo;
-	List <String> userString;
-	HashMap<Integer, CoverageResultDTO> coverageResults = new HashMap<Integer, CoverageResultDTO>();
+    public TestResultsAnalyzerAction(@SuppressWarnings("rawtypes") AbstractProject project) {
+        this.project = project;
+    }
 
-	public TestResultsAnalyzerAction(@SuppressWarnings("rawtypes") AbstractProject project) {
-		this.project = project;
-	}
+    public TestResultsAnalyzerAction(List<Integer> builds, Vector<Integer> compileFailedBuilds, List<String> userInBuildChange) {
+        this.builds = builds;
+        this.compileFailedBuilds = compileFailedBuilds;
+        this.userInBuildChange = userInBuildChange;
+    }
 
-	public TestResultsAnalyzerAction(List<Integer> builds, Vector<Integer> compileFailedBuilds, List <String> userInBuildChange) {
-		this.builds = builds;
-		this.compileFailedBuilds = compileFailedBuilds;
-		this.userInBuildChange = userInBuildChange;
-	}
+    public TestResultsAnalyzerAction(List<Integer> builds, Vector<Integer> compileFailedBuilds) {
+        this.builds = builds;
+        this.compileFailedBuilds = compileFailedBuilds;
+    }
 
-	public TestResultsAnalyzerAction(List<Integer> builds, Vector<Integer> compileFailedBuilds) {
-		this.builds = builds;
-		this.compileFailedBuilds = compileFailedBuilds;
-	}
+    /**
+     * The display name for the action.
+     *
+     * @return the name as String
+     */
+    public final String getDisplayName() {
+        return this.hasPermission() ? Constants.NAME : null;
+    }
 
-	/**
-	 * The display name for the action.
-	 * 
-	 * @return the name as String
-	 */
-	public final String getDisplayName() {
-		return this.hasPermission() ? Constants.NAME : null;
-	}
+    /**
+     * The icon for this action.
+     *
+     * @return the icon file as String
+     */
+    public final String getIconFileName() {
+        return this.hasPermission() ? Constants.ICONFILENAME : null;
+    }
 
-	/**
-	 * The icon for this action.
-	 * 
-	 * @return the icon file as String
-	 */
-	public final String getIconFileName() {
-		return this.hasPermission() ? Constants.ICONFILENAME : null;
-	}
+    /**
+     * The url for this action.
+     *
+     * @return the url as String
+     */
+    public String getUrlName() {
+        return this.hasPermission() ? Constants.URL : null;
+    }
 
-	/**
-	 * The url for this action.
-	 * 
-	 * @return the url as String
-	 */
-	public String getUrlName() {
-		return this.hasPermission() ? Constants.URL : null;
-	}
+    /**
+     * Search url for this action.
+     *
+     * @return the url as String
+     */
+    public String getSearchUrl() {
+        return this.hasPermission() ? Constants.URL : null;
+    }
 
-	/**
-	 * Search url for this action.
-	 * 
-	 * @return the url as String
-	 */
-	public String getSearchUrl() {
-		return this.hasPermission() ? Constants.URL : null;
-	}
+    /**
+     * Checks if the user has CONFIGURE permission.
+     *
+     * @return true - user has permission, false - no permission.
+     */
+    private boolean hasPermission() {
+        return project.hasPermission(Item.READ);
+    }
 
-	/**
-	 * Checks if the user has CONFIGURE permission.
-	 * 
-	 * @return true - user has permission, false - no permission.
-	 */
-	private boolean hasPermission() {
-		return project.hasPermission(Item.READ);
-	}
+    @SuppressWarnings("rawtypes")
+    public AbstractProject getProject() {
+        return this.project;
+    }
 
-	@SuppressWarnings("rawtypes")
-	public AbstractProject getProject() {
-		return this.project;
-	}
+    @JavaScriptMethod
+    public JSONArray getNoOfBuilds(String noOfbuildsNeeded) {
+        JSONArray jsonArray;
+        int noOfBuilds = getNoOfBuildRequired(noOfbuildsNeeded);
 
-	@JavaScriptMethod
-	public JSONArray getNoOfBuilds(String noOfbuildsNeeded) {
-		JSONArray jsonArray;
-		int noOfBuilds = getNoOfBuildRequired(noOfbuildsNeeded);
+        jsonArray = getBuildsArray(getBuildList(noOfBuilds, "no"));
 
-		jsonArray = getBuildsArray(getBuildList(noOfBuilds, "no"));
+        return jsonArray;
+    }
 
-		return jsonArray;
-	}
+    private JSONArray getBuildsArray(List<Integer> buildList) {
+        JSONArray jsonArray = new JSONArray();
+        for (Integer build : buildList) {
+            jsonArray.add(build);
+        }
+        return jsonArray;
+    }
 
-	private JSONArray getBuildsArray(List<Integer> buildList) {
-		JSONArray jsonArray = new JSONArray();
-		for(Integer build : buildList) {
-			jsonArray.add(build);
-		}
-		return jsonArray;
-	}
+    /**
+     * @brief Determines which builds will have data send to the front end
+     */
+    public List<Integer> getBuildList(int noOfBuilds, String showCompileFail) {
+        boolean showFail = showCompileFail.equals("show");
 
-	/**
-	 *  @brief Determines which builds will have data send to the front end
-	 */
-	public List<Integer> getBuildList(int noOfBuilds, String showCompileFail) {
-		boolean showFail = showCompileFail.equals("show");
+        if (noOfBuilds < 0 || noOfBuilds > builds.size()) {
+            noOfBuilds = builds.size();
+        }
 
-		if(noOfBuilds < 0 || noOfBuilds > builds.size()) {
-			noOfBuilds = builds.size();
-		}
+        List<Integer> buildList = new ArrayList<Integer>();
+        for (int i = 0; i < noOfBuilds; i++) {
+            int index = builds.get(i);
+            if (showFail || !(compileFailedBuilds.contains(index)))
+                buildList.add(index);
+        }
 
-		List<Integer> buildList = new ArrayList<Integer>();
-		for(int i = 0; i < noOfBuilds; i++) {
-			int index = builds.get(i);
-			if(showFail || !(compileFailedBuilds.contains(index)))
-				buildList.add(index);
-		}
+        return buildList;
+    }
 
-		return buildList;
-	}
+    public List<String> getUsersList(List<Integer> buildList) {
+        userString = new ArrayList<String>();
 
-	public List<String> getUsersList(List<Integer> buildList) {
-		userString = new ArrayList<String>();
+        for (int position = 0; position < buildList.size(); position++) {
+            userString.add(userInBuildChange.get(position));
+        }
+        return userString;
+    }
 
-		for(int position=0; position<buildList.size(); position++) {
-			userString.add(userInBuildChange.get(position));
-		}
-		return userString;
-	}
+    private int getNoOfBuildRequired(String noOfbuildsNeeded) {
+        int noOfBuilds;
 
-	private int getNoOfBuildRequired(String noOfbuildsNeeded) {
-		int noOfBuilds;
+        try {
+            noOfBuilds = Integer.parseInt(noOfbuildsNeeded);
+        } catch (NumberFormatException e) {
+            noOfBuilds = -1;
+        }
 
-		try {
-			noOfBuilds = Integer.parseInt(noOfbuildsNeeded);
-		} catch (NumberFormatException e) {
-			noOfBuilds = -1;
-		}
+        return noOfBuilds;
+    }
 
-		return noOfBuilds;
-	}
+    public boolean isUpdated() {
+        int latestBuildNumber = project.getLastBuild().getNumber();
+        return !(builds.contains(latestBuildNumber));
+    }
 
-	public boolean isUpdated() {
-		int latestBuildNumber = project.getLastBuild().getNumber();
-		return !(builds.contains(latestBuildNumber));
-	}
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void getJsonLoadData() {
+        if (isUpdated()) {
+            resultInfo = new ResultInfo();
+            builds = new ArrayList<Integer>();
+            userString = new ArrayList<String>();
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void getJsonLoadData() {
-		if(isUpdated()) {
-			resultInfo = new ResultInfo();
-			builds = new ArrayList<Integer>();
-			userString = new ArrayList<String>();
+            RunList<Run> runs = project.getBuilds();
+            Iterator<Run> runIterator = runs.iterator();
 
-			RunList<Run> runs = project.getBuilds();
-			Iterator<Run> runIterator = runs.iterator();
+            //Loop over all the builds
+            while (runIterator.hasNext()) {
+                Run run = runIterator.next();
+                int buildNumber = run.getNumber();
 
-			//Loop over all the builds
-			while(runIterator.hasNext()) {
-				Run run = runIterator.next();
-				int buildNumber = run.getNumber();
+                builds.add(run.getNumber());
+                List<AbstractTestResultAction> testActions = run.getActions(hudson.tasks.test.AbstractTestResultAction.class);
 
-				builds.add(run.getNumber());
-				List<AbstractTestResultAction> testActions = run.getActions(hudson.tasks.test.AbstractTestResultAction.class);
+                if (testActions.size() == 0)
+                    compileFailedBuilds.add(buildNumber);
 
-				if(testActions.size() == 0)
-					compileFailedBuilds.add(buildNumber);
-
-				AbstractBuild build = project.getBuildByNumber(buildNumber);
-				String buildUrl = build.getUrl();
+                AbstractBuild build = project.getBuildByNumber(buildNumber);
+                String buildUrl = build.getUrl();
 
                 //Load the Code Coverage Results from Cobertura into the coverageResult variable
                 LoadCoberturaResults(buildNumber, build);
 
-				//get user set for this build
-				Set<User> tempUsers = build.getCulprits();
-				String userId = "";	   //convert user set to String of username
-				for(User user : tempUsers) {
-					userId += user.getId();
-				}
-				//save user name
-				userInBuildChange.add(userId);
+                //get user set for this build
+                Set<User> tempUsers = build.getCulprits();
+                String userId = "";       //convert user set to String of username
+                for (User user : tempUsers) {
+                    userId += user.getId();
+                }
+                //save user name
+                userInBuildChange.add(userId);
 
-				for(hudson.tasks.test.AbstractTestResultAction testAction : testActions) {
-					TestResult testResult = (TestResult) testAction.getResult();
-					Collection<PackageResult> packageResults = testResult.getChildren();
+                for (hudson.tasks.test.AbstractTestResultAction testAction : testActions) {
+                    TestResult testResult = (TestResult) testAction.getResult();
+                    Collection<PackageResult> packageResults = testResult.getChildren();
 
-					for(PackageResult packageResult : packageResults) { // packageresult
-						resultInfo.addPackage(buildNumber, (TabulatedResult) packageResult, Jenkins.getInstance().getRootUrl() + buildUrl);
-					}
-				}
-			}
-			//check whether the username is Null, and set it to the old username
-			for(int i=0; i < userInBuildChange.size(); i++)
-				updateEmptyUser(i);
-		}
-	}
+                    for (PackageResult packageResult : packageResults) { // packageresult
+                        resultInfo.addPackage(buildNumber, packageResult, Jenkins.getInstance().getRootUrl() + buildUrl);
+                    }
+                }
+            }
+            //check whether the username is Null, and set it to the old username
+            for (int i = 0; i < userInBuildChange.size(); i++)
+                updateEmptyUser(i);
+        }
+    }
 
     /**
      * Loads the Cobertura Results from a specific Jenkins build.
+     *
      * @param buildNumber buildNumber to load Cobertura Results for.
-     * @param build Abstract build to load Cobertura Results for.
+     * @param build       Abstract build to load Cobertura Results for.
      */
     private void LoadCoberturaResults(int buildNumber, AbstractBuild build) {
         CoberturaBuildAction buildAction = null;
-          //Check if Project has Parent (example: MavenModule has a parent of MavenModuleSet)
-        if(project.getParent() != null) {
-			try {
-				//Get the specific build as seen by the top level project
-				AbstractBuild tempBuild = ((AbstractProject) project.getParent()).getBuildByNumber(buildNumber);
-				if(tempBuild != null) {
-					//Get the Cobertura build action from the specific build (if possible)
-					buildAction = tempBuild.getAction(CoberturaBuildAction.class);
-				}
-			} catch(Exception e) {
-				//In case the above system fails, fall back to non-maven support
-				buildAction = build.getAction(CoberturaBuildAction.class);
-			}
+        //Check if Project has Parent (example: MavenModule has a parent of MavenModuleSet)
+        if (project.getParent() != null) {
+            try {
+                //Get the specific build as seen by the top level project
+                AbstractBuild tempBuild = ((AbstractProject) project.getParent()).getBuildByNumber(buildNumber);
+                if (tempBuild != null) {
+                    //Get the Cobertura build action from the specific build (if possible)
+                    buildAction = tempBuild.getAction(CoberturaBuildAction.class);
+                }
+            } catch (Exception e) {
+                //In case the above system fails, fall back to non-maven support
+                buildAction = build.getAction(CoberturaBuildAction.class);
+            }
         } else {
             buildAction = build.getAction(CoberturaBuildAction.class);
         }
 
-        if(buildAction != null) {
+        if (buildAction != null) {
             //Get specific top level Coverage results from the specific build
             CoverageResult result = buildAction.getResult();
             if (result != null) {
-				CoverageResultDTO coverageResult = new CoverageResultDTO();
+                CoverageResultDTO coverageResult = new CoverageResultDTO();
                 //Convert metrics to CoverageResultsDTO for serializing to JSON
                 Map<CoverageMetric, Ratio> metrics = result.getResults();
                 coverageResult.setPackages(metrics.get(CoverageMetric.PACKAGES).numerator + "/" + metrics.get(CoverageMetric.PACKAGES).denominator);
@@ -253,196 +253,196 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
                 coverageResult.setMethods(metrics.get(CoverageMetric.METHOD).numerator + "/" + metrics.get(CoverageMetric.METHOD).denominator);
                 coverageResult.setLines(metrics.get(CoverageMetric.LINE).numerator + "/" + metrics.get(CoverageMetric.LINE).denominator);
                 coverageResult.setConditionals(metrics.get(CoverageMetric.CONDITIONAL).numerator + "/" + metrics.get(CoverageMetric.CONDITIONAL).denominator);
-				coverageResults.put(buildNumber, coverageResult);
+                coverageResults.put(buildNumber, coverageResult);
             }
         }
     }
 
-	@JavaScriptMethod
-	public JSONObject getTreeResult(String noOfBuildsNeeded, String showCompileFail) {
-		int noOfBuilds = getNoOfBuildRequired(noOfBuildsNeeded);
-		List<Integer> buildList = getBuildList(noOfBuilds, showCompileFail);
-		getUsersList(buildList);
-		JsTreeUtil jsTreeUtils = new JsTreeUtil();
-		return jsTreeUtils.getJsTree(buildList, resultInfo, userString, coverageResults);
-	}
+    @JavaScriptMethod
+    public JSONObject getTreeResult(String noOfBuildsNeeded, String showCompileFail) {
+        int noOfBuilds = getNoOfBuildRequired(noOfBuildsNeeded);
+        List<Integer> buildList = getBuildList(noOfBuilds, showCompileFail);
+        getUsersList(buildList);
+        JsTreeUtil jsTreeUtils = new JsTreeUtil();
+        return jsTreeUtils.getJsTree(buildList, resultInfo, userString, coverageResults);
+    }
 
-	@JavaScriptMethod
-	public String getExportCSV(String timeBased) {
-		boolean isTimeBased = Boolean.parseBoolean(timeBased);
-		Map<String, PackageInfo> packageResults = resultInfo.getPackageResults();
-		return exportCSV(isTimeBased, packageResults);
-	}
+    @JavaScriptMethod
+    public String getExportCSV(String timeBased) {
+        boolean isTimeBased = Boolean.parseBoolean(timeBased);
+        Map<String, PackageInfo> packageResults = resultInfo.getPackageResults();
+        return exportCSV(isTimeBased, packageResults);
+    }
 
-	//may need to also escape inner strings since they could contain quotes
-	public String exportCSV(boolean isTimeBased, Map<String, PackageInfo> packageResults) {
-		String buildsString = "";
-		for(int i = 0; i < builds.size(); i++) {
-			buildsString += ",\"" + Integer.toString(builds.get(i)) + "\"";
-		}
-		String header = "\"Package\",\"Class\",\"Test\"";
-		header += buildsString;
-		String export = header + System.lineSeparator();
-		DecimalFormat df = new DecimalFormat("#.###");
-		df.setRoundingMode(RoundingMode.CEILING);
-		for(PackageInfo pInfo : packageResults.values()) {
-			String packageName = pInfo.getName();
-			//loop the classes
-			for(ClassInfo cInfo : pInfo.getClasses().values()) {
-				String className = cInfo.getName();
-				//loop the tests
-				for(TestCaseInfo tInfo : cInfo.getTests().values()) {
-					String testName = tInfo.getName();
-					export += "\""+ packageName + "\",\"" + className + "\",\"" + testName+"\"";
-					for(ResultData buildResult : tInfo.getBuildPackageResults().values()) {
-						if(!isTimeBased) {
-							export += ",\"" + buildResult.getStatus() + "\"";
-						} else {
-							export += ",\"" + df.format(buildResult.getTotalTimeTaken()) + "\"";
-						}
-					}
-					export += System.lineSeparator();
-				}
-			}
-		}
-		return export;
-	}
+    //may need to also escape inner strings since they could contain quotes
+    public String exportCSV(boolean isTimeBased, Map<String, PackageInfo> packageResults) {
+        String buildsString = "";
+        for (int i = 0; i < builds.size(); i++) {
+            buildsString += ",\"" + Integer.toString(builds.get(i)) + "\"";
+        }
+        String header = "\"Package\",\"Class\",\"Test\"";
+        header += buildsString;
+        String export = header + System.lineSeparator();
+        DecimalFormat df = new DecimalFormat("#.###");
+        df.setRoundingMode(RoundingMode.CEILING);
+        for (PackageInfo pInfo : packageResults.values()) {
+            String packageName = pInfo.getName();
+            //loop the classes
+            for (ClassInfo cInfo : pInfo.getClasses().values()) {
+                String className = cInfo.getName();
+                //loop the tests
+                for (TestCaseInfo tInfo : cInfo.getTests().values()) {
+                    String testName = tInfo.getName();
+                    export += "\"" + packageName + "\",\"" + className + "\",\"" + testName + "\"";
+                    for (ResultData buildResult : tInfo.getBuildPackageResults().values()) {
+                        if (!isTimeBased) {
+                            export += ",\"" + buildResult.getStatus() + "\"";
+                        } else {
+                            export += ",\"" + df.format(buildResult.getTotalTimeTaken()) + "\"";
+                        }
+                    }
+                    export += System.lineSeparator();
+                }
+            }
+        }
+        return export;
+    }
 
-	@JavaScriptMethod
-	public int getTotalNoOfBuilds() {
-		return builds.size();
-	}
+    @JavaScriptMethod
+    public int getTotalNoOfBuilds() {
+        return builds.size();
+    }
 
 
-	//if the username is NULL, go back to history, find the first build with non-Null username
-	private void updateEmptyUser(int i) {
-		//if the username is Null
-		if(userInBuildChange.get(i).equals("")) {
-			//go back to history
-			for(int j = i; j < userInBuildChange.size(); j++) {
-				//if found the first one with non-Null username
-				if(!(userInBuildChange.get(j).equals(""))) {
-					userInBuildChange.set(i, userInBuildChange.get(j));
-					break;
-				}
-			}
-		} else {
-			return;
-		}
-	}
+    //if the username is NULL, go back to history, find the first build with non-Null username
+    private void updateEmptyUser(int i) {
+        //if the username is Null
+        if (userInBuildChange.get(i).equals("")) {
+            //go back to history
+            for (int j = i; j < userInBuildChange.size(); j++) {
+                //if found the first one with non-Null username
+                if (!(userInBuildChange.get(j).equals(""))) {
+                    userInBuildChange.set(i, userInBuildChange.get(j));
+                    break;
+                }
+            }
+        } else {
+            return;
+        }
+    }
 
-	/**
-	 *  @brief Accessor methods used by the main index.jelly page
-	 */
-	public String getNoOfBuilds() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getNoOfBuilds();
-	}
+    /**
+     * @brief Accessor methods used by the main index.jelly page
+     */
+    public String getNoOfBuilds() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getNoOfBuilds();
+    }
 
-	public boolean getShowAllBuilds() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowAllBuilds();
-	}
+    public boolean getShowAllBuilds() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getShowAllBuilds();
+    }
 
-	public boolean getShowLineGraph() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowLineGraph();
-	}
+    public boolean getShowLineGraph() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getShowLineGraph();
+    }
 
-	public boolean getShowBarGraph() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowBarGraph();
-	}
+    public boolean getShowBarGraph() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getShowBarGraph();
+    }
 
-	public boolean getShowPieGraph() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowPieGraph();
-	}
+    public boolean getShowPieGraph() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getShowPieGraph();
+    }
 
-	public boolean getShowBuildTime() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowBuildTime();
-	}
+    public boolean getShowBuildTime() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getShowBuildTime();
+    }
 
-	public String getChartDataType() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getChartDataType();
-	}
+    public String getChartDataType() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getChartDataType();
+    }
 
-	public String getRunTimeLowThreshold() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getRunTimeLowThreshold();
-	}
+    public String getRunTimeLowThreshold() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getRunTimeLowThreshold();
+    }
 
-	public String getRunTimeHighThreshold() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getRunTimeHighThreshold();
-	}
+    public String getRunTimeHighThreshold() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getRunTimeHighThreshold();
+    }
 
-	public String getPassedStatusColor() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getPassedStatusColor();
-	}
+    public String getPassedStatusColor() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getPassedStatusColor();
+    }
 
-	public String getFailedStatusColor() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getFailedStatusColor();
-	}
+    public String getFailedStatusColor() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getFailedStatusColor();
+    }
 
-	public String getSkippedStatusColor() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getSkippedStatusColor();
-	}
+    public String getSkippedStatusColor() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getSkippedStatusColor();
+    }
 
-	public String getTotalStatusColor() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getTotalStatusColor();
-	}
+    public String getTotalStatusColor() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getTotalStatusColor();
+    }
 
-	public String getRuntimeStatusColor() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getRuntimeStatusColor();
-	}
+    public String getRuntimeStatusColor() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getRuntimeStatusColor();
+    }
 
-	public String getPassedStatusText() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getPassedStatusText();
-	}
+    public String getPassedStatusText() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getPassedStatusText();
+    }
 
-	public String getFailedStatusText() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getFailedStatusText();
-	}
+    public String getFailedStatusText() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getFailedStatusText();
+    }
 
-	public String getSkippedStatusText() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getSkippedStatusText();
-	}
+    public String getSkippedStatusText() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getSkippedStatusText();
+    }
 
-	public String getLightGreen() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getLightGreen();
-	}
+    public String getLightGreen() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getLightGreen();
+    }
 
-	public String getDarkGreen() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkGreen();
-	}
+    public String getDarkGreen() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkGreen();
+    }
 
-	public String getLightRed() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getLightRed();
-	}
+    public String getLightRed() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getLightRed();
+    }
 
-	public String getBrightRed() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getBrightRed();
-	}
+    public String getBrightRed() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getBrightRed();
+    }
 
-	public String getDarkRed() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkRed();
-	}
+    public String getDarkRed() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkRed();
+    }
 
-	public String getLightYellow() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getLightYellow();
-	}
+    public String getLightYellow() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getLightYellow();
+    }
 
-	public String getBrown() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getBrown();
-	}
+    public String getBrown() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getBrown();
+    }
 
-	public String getPurple() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getPurple();
-	}
+    public String getPurple() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getPurple();
+    }
 
-	public String getLightBlue() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getLightBlue();
-	}
+    public String getLightBlue() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getLightBlue();
+    }
 
-	public String getDarkBlue() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkBlue();
-	}
+    public String getDarkBlue() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getDarkBlue();
+    }
 
-	public String getMagenta() {
-		return TestResultsAnalyzerExtension.DESCRIPTOR.getMagenta();
-	}
+    public String getMagenta() {
+        return TestResultsAnalyzerExtension.DESCRIPTOR.getMagenta();
+    }
 }

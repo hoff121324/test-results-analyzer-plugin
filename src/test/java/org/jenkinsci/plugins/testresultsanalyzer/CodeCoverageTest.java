@@ -7,10 +7,10 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.interactions.Actions;
 
 import java.util.List;
 
@@ -18,12 +18,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class CodeCoverageTest {
-    @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
-
     private static WebDriver driver;
     private static JavascriptExecutor js;
     private static WebDriverWait wait;
+    @Rule
+    public JenkinsRule jenkinsRule = new JenkinsRule();
 
     @BeforeClass
     public static void startDriver() throws Exception {
@@ -59,15 +58,15 @@ public class CodeCoverageTest {
     public void setChartsShown(boolean line) {
         WebElement linegraph = driver.findElement(By.id("linegraph"));
 
-        if(linegraph.isSelected() != line && linegraph.isEnabled()) {
+        if (linegraph.isSelected() != line && linegraph.isEnabled()) {
             linegraph.click();
         }
-  
+
         driver.findElement(By.id("getbuildreport")).click();
     }
 
     public void setCoverageCharts() {
-		openSettingsMenu();
+        openSettingsMenu();
         setChartsHelper("Code Coverage");
     }
 
@@ -80,8 +79,7 @@ public class CodeCoverageTest {
 
     @Test
     @LocalData
-    public void testCodeCoverageIsLoaded()
-    {
+    public void testCodeCoverageIsLoaded() {
         //arrange
         setCoverageCharts();
         WebElement lineChart = driver.findElement(By.id("linechart"));
@@ -99,8 +97,7 @@ public class CodeCoverageTest {
 
     @Test
     @LocalData
-    public void testCodeCoverageResults()
-    {
+    public void testCodeCoverageResults() {
         //arrange
         String expectedClasses = "100 %";
         String expectedConditionals = "100 %";
@@ -111,11 +108,11 @@ public class CodeCoverageTest {
 
         //act
         setCoverageCharts();
-		WebElement svgElement = driver.findElement(By.cssSelector("#linechart > .highcharts-container > svg > .highcharts-series-group > .highcharts-markers > path"));
+        WebElement svgElement = driver.findElement(By.cssSelector("#linechart > .highcharts-container > svg > .highcharts-series-group > .highcharts-markers > path"));
         WebElement toolTip = driver.findElement(By.cssSelector("#linechart > .highcharts-container > svg > .highcharts-tooltip"));
-		Actions act = new Actions(driver);
-		act.moveToElement(svgElement).perform();
-		wait.until(ExpectedConditions.visibilityOf(toolTip));
+        Actions act = new Actions(driver);
+        act.moveToElement(svgElement).perform();
+        wait.until(ExpectedConditions.visibilityOf(toolTip));
         List<WebElement> codeResult = toolTip.findElement(By.cssSelector("text")).findElements(By.cssSelector("tspan"));
 
         //assert
@@ -127,19 +124,19 @@ public class CodeCoverageTest {
         assertEquals(expectedPackages, codeResult.get(18).getText());
     }
 
-	/**
-	 *  @brief helper method for above methods
-	 *  Blocks until the options menu is fully open
-	 */
-	public void openSettingsMenu() {
-		WebElement menu = driver.findElement(By.id("settingsmenu"));
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("settingsmenubutton")));
+    /**
+     * @brief helper method for above methods
+     * Blocks until the options menu is fully open
+     */
+    public void openSettingsMenu() {
+        WebElement menu = driver.findElement(By.id("settingsmenu"));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("settingsmenubutton")));
 
-		if(!menu.isDisplayed()) {
-			//clicking the settings menu button displays the options menu
-			driver.findElement(By.id("settingsmenubutton")).click();
-		}
-		//wait 2 seconds for the options menu to fully open
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("getbuildreport")));
-	}
+        if (!menu.isDisplayed()) {
+            //clicking the settings menu button displays the options menu
+            driver.findElement(By.id("settingsmenubutton")).click();
+        }
+        //wait 2 seconds for the options menu to fully open
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("getbuildreport")));
+    }
 }

@@ -63,6 +63,7 @@ public class CoverageResultDTO {
 
     /**
      * Get's the JSON representation of the CoverageResult.
+     *
      * @return CoverageResult (packages, files, classes, methods, lines and conditions) as a JSON Object.
      */
     public JSONObject getJsonObject() {

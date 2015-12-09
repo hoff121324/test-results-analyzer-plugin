@@ -1,107 +1,102 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.testresultsanalyzer.result.CoverageResultDTO;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
-import hudson.model.User;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.jenkinsci.plugins.testresultsanalyzer.result.CoverageResultDTO;
-import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 
 public class JsTreeUtil {
 
-	public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users, Map<Integer, CoverageResultDTO> coverageResults) {
-		JSONObject tree = new JSONObject();
+    public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users, Map<Integer, CoverageResultDTO> coverageResults) {
+        JSONObject tree = new JSONObject();
 
-		JSONArray buildJson = new JSONArray();
+        JSONArray buildJson = new JSONArray();
 
-		for(Integer buildNumber : builds) {
-			buildJson.add(buildNumber.toString());
-		}
+        for (Integer buildNumber : builds) {
+            buildJson.add(buildNumber.toString());
+        }
 
-		tree.put("builds", buildJson);
-		JSONObject packageResults = resultInfo.getJsonObject();
-		JSONArray results = new JSONArray();
+        tree.put("builds", buildJson);
+        JSONObject packageResults = resultInfo.getJsonObject();
+        JSONArray results = new JSONArray();
 
-		for(Object packageName : packageResults.keySet()) {
+        for (Object packageName : packageResults.keySet()) {
 
-			JSONObject packageJson = packageResults.getJSONObject((String) packageName);
-			results.add(createJson(builds, packageJson));
-		}
+            JSONObject packageJson = packageResults.getJSONObject((String) packageName);
+            results.add(createJson(builds, packageJson));
+        }
 
-		tree.put("results", results);
+        tree.put("results", results);
 
-		JSONArray owner = new JSONArray();
-		for(int i=0; i < users.size(); i++){
-			JSONObject userJson = new JSONObject();
-			userJson.put( "userSet" , users.get(i) );
-			owner.add(userJson);
-		}
+        JSONArray owner = new JSONArray();
+        for (int i = 0; i < users.size(); i++) {
+            JSONObject userJson = new JSONObject();
+            userJson.put("userSet", users.get(i));
+            owner.add(userJson);
+        }
 
-		//Add entry for Cobertura Coverage Results
+        //Add entry for Cobertura Coverage Results
         JSONObject coverageResultsJSON = new JSONObject();
-        for(Map.Entry<Integer, CoverageResultDTO> entry : coverageResults.entrySet()) {
+        for (Map.Entry<Integer, CoverageResultDTO> entry : coverageResults.entrySet()) {
             coverageResultsJSON.put(String.valueOf(entry.getKey()), entry.getValue());
         }
 
         tree.put("coverage", coverageResultsJSON);
-		tree.put("owneruser", owner);
-		return tree;
-	}
+        tree.put("owneruser", owner);
+        return tree;
+    }
 
-	private JSONObject getBaseJson() {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("text", "");
-		jsonObject.put("buildResults", new JSONArray());
-		return jsonObject;
-	}
+    private JSONObject getBaseJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("text", "");
+        jsonObject.put("buildResults", new JSONArray());
+        return jsonObject;
+    }
 
-	private JSONObject createJson(List<Integer> builds, JSONObject dataJson) {
-		JSONObject baseJson = getBaseJson();
-		baseJson.put("text", dataJson.get("name"));
-		baseJson.put("type", dataJson.get("type"));
-		baseJson.put("buildStatuses", dataJson.get("buildStatuses"));
-		JSONObject packageBuilds = dataJson.getJSONObject("builds");
-		JSONArray treeDataJson = new JSONArray();
+    private JSONObject createJson(List<Integer> builds, JSONObject dataJson) {
+        JSONObject baseJson = getBaseJson();
+        baseJson.put("text", dataJson.get("name"));
+        baseJson.put("type", dataJson.get("type"));
+        baseJson.put("buildStatuses", dataJson.get("buildStatuses"));
+        JSONObject packageBuilds = dataJson.getJSONObject("builds");
+        JSONArray treeDataJson = new JSONArray();
 
-		for(Integer buildNumber : builds) {
-			JSONObject build = new JSONObject();
+        for (Integer buildNumber : builds) {
+            JSONObject build = new JSONObject();
 
-			if(packageBuilds.containsKey(buildNumber.toString())) {
-				JSONObject buildResult = packageBuilds.getJSONObject(buildNumber.toString());
-				//String status = buildResult.getString("status");
-				buildResult.put("buildNumber", buildNumber.toString());
-				build = buildResult;
-			} else {
-				build.put("status", "N/A");
-				build.put("buildNumber", buildNumber.toString());
-				//continue;
-			}
+            if (packageBuilds.containsKey(buildNumber.toString())) {
+                JSONObject buildResult = packageBuilds.getJSONObject(buildNumber.toString());
+                //String status = buildResult.getString("status");
+                buildResult.put("buildNumber", buildNumber.toString());
+                build = buildResult;
+            } else {
+                build.put("status", "N/A");
+                build.put("buildNumber", buildNumber.toString());
+                //continue;
+            }
 
-			treeDataJson.add(build);
-		}
+            treeDataJson.add(build);
+        }
 
-		baseJson.put("buildResults", treeDataJson);
+        baseJson.put("buildResults", treeDataJson);
 
-		if(dataJson.containsKey("children")) {
-			JSONArray childrens = new JSONArray();
-			JSONObject childrenJson = dataJson.getJSONObject("children");
-			@SuppressWarnings("unchecked")
-			Set<String> childeSet = (Set<String>) childrenJson.keySet();
+        if (dataJson.containsKey("children")) {
+            JSONArray childrens = new JSONArray();
+            JSONObject childrenJson = dataJson.getJSONObject("children");
+            @SuppressWarnings("unchecked")
+            Set<String> childeSet = (Set<String>) childrenJson.keySet();
 
-			for(String childName : childeSet) {
-				childrens.add(createJson(builds, childrenJson.getJSONObject(childName)));
-			}
+            for (String childName : childeSet) {
+                childrens.add(createJson(builds, childrenJson.getJSONObject(childName)));
+            }
 
-			baseJson.put("children", childrens);
-		}
+            baseJson.put("children", childrens);
+        }
 
-		return baseJson;
-	}
+        return baseJson;
+    }
 }

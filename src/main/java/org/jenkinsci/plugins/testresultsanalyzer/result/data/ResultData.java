@@ -9,205 +9,204 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ResultData {
-	private String name;
-	private boolean isPassed;
-	private boolean isSkipped;
-	private boolean isFlaky;
-	private transient TabulatedResult packageResult;
-	private int totalTests;
-	private int totalFailed;
-	private int totalPassed;
-	private int totalFlaky;
-	private int totalSkipped;
-	private List<ResultData> children = new ArrayList<ResultData>();
-	private float totalTimeTaken;
-	private String status;
-	private String failureMessage = "";
+    private String name;
+    private boolean isPassed;
+    private boolean isSkipped;
+    private boolean isFlaky;
+    private transient TabulatedResult packageResult;
+    private int totalTests;
+    private int totalFailed;
+    private int totalPassed;
+    private int totalFlaky;
+    private int totalSkipped;
+    private List<ResultData> children = new ArrayList<ResultData>();
+    private float totalTimeTaken;
+    private String status;
+    private String failureMessage = "";
 
-	private String url;
+    private String url;
 
-	public String getFailureMessage() {
-		return failureMessage;
-	}
+    /**
+     * @brief do nothing constructor
+     */
+    public ResultData() {
 
-	public void setFailureMessage(String failureMessage) {
-		this.failureMessage = failureMessage;
-	}
+    }
 
-	public String getName() {
-		return name;
-	}
+    public ResultData(TestObject result, String url) {
+        setName(result.getName());
+        setPassed(result.getFailCount() == 0);
+        setSkipped(result.getSkipCount() == result.getTotalCount());
+        setTotalTests(result.getTotalCount());
+        setTotalFailed(result.getFailCount());
+        setTotalPassed(result.getPassCount());
+        setTotalSkipped(result.getSkipCount());
+        setTotalTimeTaken(result.getDuration());
+        setUrl(url);
+        setFlaky(false);
+        setTotalFlaky(0);
+        evaluateStatus();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getFailureMessage() {
+        return failureMessage;
+    }
 
-	public boolean isPassed() {
-		return isPassed;
-	}
+    public void setFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
+    }
 
-	public void setPassed(boolean isPassed) {
-		this.isPassed = isPassed;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public boolean isSkipped() {
-		return isSkipped;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setSkipped(boolean isSkipped) {
-		this.isSkipped = isSkipped;
-	}
+    public boolean isPassed() {
+        return isPassed;
+    }
 
-	public boolean isFlaky() {
+    public void setPassed(boolean isPassed) {
+        this.isPassed = isPassed;
+    }
+
+    public boolean isSkipped() {
+        return isSkipped;
+    }
+
+    public void setSkipped(boolean isSkipped) {
+        this.isSkipped = isSkipped;
+    }
+
+    public boolean isFlaky() {
         return isFlaky;
     }
 
-	
     public void setFlaky(boolean isFlaky) {
         this.isFlaky = isFlaky;
     }
 
-	public TabulatedResult getPackageResult() {
-		return packageResult;
-	}
+    public TabulatedResult getPackageResult() {
+        return packageResult;
+    }
 
-	public void setPackageResult(TabulatedResult packageResult) {
-		this.packageResult = packageResult;
-	}
+    public void setPackageResult(TabulatedResult packageResult) {
+        this.packageResult = packageResult;
+    }
 
-	public int getTotalTests() {
-		return totalTests;
-	}
+    public int getTotalTests() {
+        return totalTests;
+    }
 
-	public void setTotalTests(int totalTests) {
-		this.totalTests = totalTests;
-	}
+    public void setTotalTests(int totalTests) {
+        this.totalTests = totalTests;
+    }
 
-	public int getTotalFailed() {
-		return totalFailed;
-	}
+    public int getTotalFailed() {
+        return totalFailed;
+    }
 
-	public void setTotalFailed(int totalFailed) {
-		this.totalFailed = totalFailed;
-	}
+    public void setTotalFailed(int totalFailed) {
+        this.totalFailed = totalFailed;
+    }
 
-	public int getTotalPassed() {
-		return totalPassed;
-	}
+    public int getTotalPassed() {
+        return totalPassed;
+    }
 
-	public void setTotalPassed(int totalPassed) {
-		this.totalPassed = totalPassed;
-	}
+    public void setTotalPassed(int totalPassed) {
+        this.totalPassed = totalPassed;
+    }
 
-	public int getTotalSkipped() {
-		return totalSkipped;
-	}
+    public int getTotalSkipped() {
+        return totalSkipped;
+    }
 
-	public void setTotalSkipped(int totalSkipped) {
-		this.totalSkipped = totalSkipped;
-	}
+    public void setTotalSkipped(int totalSkipped) {
+        this.totalSkipped = totalSkipped;
+    }
 
     public int getTotalFlaky() {
         return totalFlaky;
     }
-    
+
     public void setTotalFlaky(int totalFlaky) {
         this.totalFlaky = totalFlaky;
     }
 
-	public List<ResultData> getChildren() {
-		return this.children;
-	}
+    public List<ResultData> getChildren() {
+        return this.children;
+    }
 
-	public void addChildResult(ResultData childResultData) {
-		this.children.add(childResultData);
-	}
+    public void addChildResult(ResultData childResultData) {
+        this.children.add(childResultData);
+    }
 
-	public void addChildResult(List<ResultData> childResults) {
-		this.children.addAll(childResults);
-	}
+    public void addChildResult(List<ResultData> childResults) {
+        this.children.addAll(childResults);
+    }
 
-	public float getTotalTimeTaken() {
-		return totalTimeTaken;
-	}
+    public float getTotalTimeTaken() {
+        return totalTimeTaken;
+    }
 
-	public void setTotalTimeTaken(float totalTimeTaken) {
-		this.totalTimeTaken = totalTimeTaken;
-	}
+    public void setTotalTimeTaken(float totalTimeTaken) {
+        this.totalTimeTaken = totalTimeTaken;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	/**
-	 *  @brief do nothing constructor
-	 */
-	public ResultData() {
+    protected void evaluateStatus() {
+        if (isSkipped) {
+            status = "SKIPPED";
+        } else if (isPassed) {
+            status = "PASSED";
+        } else {
+            status = "FAILED";
+        }
+    }
 
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public ResultData(TestObject result, String url) {
-		setName(result.getName());
-		setPassed(result.getFailCount() == 0);
-		setSkipped(result.getSkipCount() == result.getTotalCount());
-		setTotalTests(result.getTotalCount());
-		setTotalFailed(result.getFailCount());
-		setTotalPassed(result.getPassCount());
-		setTotalSkipped(result.getSkipCount());
-		setTotalTimeTaken(result.getDuration());
-		setUrl(url);
-		setFlaky(false);
-		setTotalFlaky(0);   
-		evaluateStatus();
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	protected void evaluateStatus() {
-		if(isSkipped) {
-			status = "SKIPPED";
-		} else if (isPassed) {
-			status = "PASSED";
-		} else {
-			status = "FAILED";
-		}
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 *  @brief Constructs a JsonObject for use by the front end code
-	 */
-	public JSONObject getJsonObject() {
-		JSONObject json = new JSONObject();
-		json.put("name", name);
-		json.put("totalTests", totalTests);
-		json.put("totalFailed", totalFailed);
-		json.put("totalPassed", totalPassed);
-		json.put("totalSkipped", totalSkipped);
-		json.put("totalFlaky", totalFlaky);
-		json.put("isPassed", isPassed);
-		json.put("isSkipped", isSkipped);
-		json.put("isFlaky", isFlaky);
-		json.put("totalTimeTaken", totalTimeTaken);
-		json.put("status", status);
-		json.put("url", url);
-		JSONArray testsChildren = new JSONArray();
-		for(ResultData childResult : children) {
-			testsChildren.add(childResult.getJsonObject());
-		}
-		if(!(failureMessage.equalsIgnoreCase(""))) {
-			json.put("failureMessage", failureMessage);
-		}
-		json.put("children", testsChildren);
-		return json;
-	}
+    /**
+     * @brief Constructs a JsonObject for use by the front end code
+     */
+    public JSONObject getJsonObject() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("totalTests", totalTests);
+        json.put("totalFailed", totalFailed);
+        json.put("totalPassed", totalPassed);
+        json.put("totalSkipped", totalSkipped);
+        json.put("totalFlaky", totalFlaky);
+        json.put("isPassed", isPassed);
+        json.put("isSkipped", isSkipped);
+        json.put("isFlaky", isFlaky);
+        json.put("totalTimeTaken", totalTimeTaken);
+        json.put("status", status);
+        json.put("url", url);
+        JSONArray testsChildren = new JSONArray();
+        for (ResultData childResult : children) {
+            testsChildren.add(childResult.getJsonObject());
+        }
+        if (!(failureMessage.equalsIgnoreCase(""))) {
+            json.put("failureMessage", failureMessage);
+        }
+        json.put("children", testsChildren);
+        return json;
+    }
 }

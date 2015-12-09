@@ -7,14 +7,14 @@ import java.util.*;
 
 public class ClassResultDataTest {
 	@Test
-	public void testSetFlaky_nonFlaky(){
+	public void testSetFlakyNonFlaky(){
 		ClassResultData classResultData = new ClassResultData();
 		classResultData.setFlaky(false);
 		assertFalse( classResultData.isFlaky() );
 	}
 	
 	@Test
-	public void testSetFlaky_flaky(){
+	public void testSetFlakyFlaky(){
 		ClassResultData classResultData = new ClassResultData();
 		classResultData.setFlaky(true);
 		assertTrue( classResultData.isFlaky() );

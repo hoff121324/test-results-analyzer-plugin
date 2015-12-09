@@ -25,7 +25,7 @@ public class TestCaseInfoTest {
 	private TestCaseInfo info = new TestCaseInfo();
 
 	@Test
-	public void testGetFlakyActions_emptyAction(){
+	public void testGetFlakyActionsEmptyAction(){
 		List<TestAction> testActions = new ArrayList<TestAction>();
 		
 		Collection<JUnitFlakyTestDataAction> flakyActions = info.getFlakyActions(testActions);
@@ -33,7 +33,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testGetFlakyActions_filterOtherFlakedAction(){
+	public void testGetFlakyActionsFilterOtherFlakedAction(){
 		List<TestAction> testActions = new ArrayList<TestAction>();
 		
 		JUnitFlakyAggregatedTestDataAction aggreAction = new JUnitFlakyAggregatedTestDataAction(1, 1, 1 );
@@ -44,7 +44,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testGetFlakyActions_oneFlakyAction(){
+	public void testGetFlakyActionsOneFlakyAction(){
 		List<TestAction> testActions = new ArrayList<TestAction>();
 		
 		JUnitFlakyAggregatedTestDataAction aggreAction = new JUnitFlakyAggregatedTestDataAction(1, 1, 1 );
@@ -58,7 +58,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testGetFlakyActions_mixedActions(){
+	public void testGetFlakyActionsMixedActions(){
 		List<TestAction> testActions = new ArrayList<TestAction>();
 		
 		JUnitFlakyAggregatedTestDataAction aggreAction = new JUnitFlakyAggregatedTestDataAction(1, 1, 1 );
@@ -72,7 +72,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testContainFlakyAction_failedAction(){
+	public void testContainFlakyActionFailedAction(){
 		Collection<JUnitFlakyTestDataAction> flakyActions = new ArrayList<JUnitFlakyTestDataAction>();
 		
 		JUnitFlakyTestDataAction flakyAction = createFailedFlakyAction();
@@ -82,7 +82,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testContainFlakyAction_passedAction(){
+	public void testContainFlakyActionPassedAction(){
 		Collection<JUnitFlakyTestDataAction> flakyActions = new ArrayList<JUnitFlakyTestDataAction>();
 		
 		JUnitFlakyTestDataAction flakyAction = createPassedFlakyAction();
@@ -92,7 +92,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testContainFlakyAction_onePassOneFail(){
+	public void testContainFlakyActionOnePassOneFail(){
 		Collection<JUnitFlakyTestDataAction> flakyActions = new ArrayList<JUnitFlakyTestDataAction>();
 		
 		JUnitFlakyTestDataAction flakyAction = createFailedFlakyAction();
@@ -105,7 +105,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testSetFlakyData_countOneFlaky(){
+	public void testSetFlakyDataCountOneFlaky(){
 		TestCaseResultData caseResultData = new TestCaseResultData();
 		
 		info.setFlakyData(caseResultData, true);
@@ -114,7 +114,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testSetFlakyData_countZeroFlaky(){
+	public void testSetFlakyDataCountZeroFlaky(){
 		TestCaseResultData caseResultData = new TestCaseResultData();
 		
 		info.setFlakyData(caseResultData, false);
@@ -123,7 +123,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testSetFlakyData_isFlakyWithPass(){
+	public void testSetFlakyDataIsFlakyWithPass(){
 		TestCaseResultData caseResultData = new TestCaseResultData();
 		
 		info.setFlakyData(caseResultData, true);
@@ -132,7 +132,7 @@ public class TestCaseInfoTest {
 	}
 	
 	@Test
-	public void testSetFlakyData_isFlakyWithFail(){
+	public void testSetFlakyDataIsFlakyWithFail(){
 		TestCaseResultData caseResultData = new TestCaseResultData();
 		
 		info.setFlakyData(caseResultData, false);

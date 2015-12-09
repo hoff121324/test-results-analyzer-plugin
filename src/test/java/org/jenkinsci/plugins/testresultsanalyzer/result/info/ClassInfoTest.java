@@ -15,7 +15,7 @@ import java.util.*;
 
 public class ClassInfoTest{
 	@Test
-	public void testSetTotalFlaky_oneFlaky(){
+	public void testSetTotalFlakyOneFlaky(){
 		int buildNum = 1;
 		int numNonFlaky = 1;
 		int numFlaky = 1;
@@ -25,27 +25,7 @@ public class ClassInfoTest{
 	}
 	
 	@Test
-	public void testSetTotalFlaky_TwoFlaky(){
-		int buildNum = 1;
-		int numNonFlaky = 0;
-		int numFlaky = 2;
-		ClassInfo classInfo = createClassInfo( buildNum, numNonFlaky, numFlaky );
-		
-		assertTrue( classInfo.countFlakyFromChildren(buildNum) ==  2);
-	}
-	
-	@Test
-	public void testSetTotalFlaky_nonFlaky(){
-		int buildNum = 1;
-		int numNonFlaky = 2;
-		int numFlaky = 0;
-		ClassInfo classInfo = createClassInfo( buildNum, numNonFlaky, numFlaky );
-		
-		assertTrue( classInfo.countFlakyFromChildren(buildNum) ==  0);
-	}
-	
-	@Test
-	public void testSetTotalFlaky_noTestCase(){
+	public void testSetTotalFlakyNoTestCase(){
 		int buildNum = 1;
 		int numNonFlaky = 0;
 		int numFlaky = 0;
@@ -55,7 +35,7 @@ public class ClassInfoTest{
 	}
 	
 	@Test
-	public void testSetTotalFlaky_buildNumber(){
+	public void testSetTotalFlakyBuildNumber(){
 		int buildNum = 1;
 		int numNonFlaky = 1;
 		int numFlaky = 1;
@@ -68,12 +48,12 @@ public class ClassInfoTest{
 		Map<String,TestCaseInfo> caseInfos = new TreeMap<String,TestCaseInfo>();
 		
 		for ( Integer i=0; i < numNonFlaky; i++ ) {
-			TestCaseInfo nonFlakyCase = createCaseInfo(buildNumber, 0, 1);
+			TestCaseInfo nonFlakyCase = createCaseInfo(buildNumber, 1, 0);
 			caseInfos.put("case"+i.toString(), nonFlakyCase);	
 		}
 		
 		for ( Integer i=0; i < numNonFlaky; i++ ) {
-			TestCaseInfo FlakyCase = createCaseInfo(buildNumber, 1, 0);
+			TestCaseInfo FlakyCase = createCaseInfo(buildNumber, 0, 1);
 			caseInfos.put("case"+i.toString(), FlakyCase);	
 		}
 		

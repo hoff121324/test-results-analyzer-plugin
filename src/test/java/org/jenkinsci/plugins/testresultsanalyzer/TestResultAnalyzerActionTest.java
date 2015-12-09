@@ -11,53 +11,53 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import java.util.*;
 
 public class TestResultAnalyzerActionTest extends HudsonTestCase {
-	TestResultsAnalyzerAction defaultAction = createDefaultAction();
+	TestResultsAnalyzerAction defaultAction = createDefaultActionThirtyBuilds();
 	
 	@Test
-    public void testGetBuildList1(){	
+    public void testGetBuildListShowCompileFailedBuild(){	
     	List<Integer> buildList = defaultAction.getBuildList(10, "show");
     	assertTrue( buildList.contains(30) );
     }
 	
 	@Test
-    public void testGetBuildList2(){
+    public void testGetBuildListShowLatestBuilds(){
 		List<Integer> buildList = defaultAction.getBuildList(10, "show");
     	assertTrue( buildList.contains(29) );
     }
 	
 	@Test
-    public void testGetBuildList3(){
+    public void testGetBuildListHideCompileFailedBuild(){
 		List<Integer> buildList = defaultAction.getBuildList(10, "no");
 		assertTrue( buildList.contains(30) == false );
     }
 	
 	@Test
-    public void testGetBuildList4(){
+    public void testGetBuildListShowCompilePassedBuild(){
 		List<Integer> buildList = defaultAction.getBuildList(10, "no");
     	assertTrue( buildList.contains(29) );
     }
     
 	@Test
-    public void testGetBuildList5(){
+    public void testGetBuildListShowLimitedBuild(){
     	List<Integer> buildList = defaultAction.getBuildList(10, "show");
-    	assertTrue( !buildList.contains(19) );
+    	assertFalse( buildList.contains(19) );
     }
 	
 	@Test
-    public void testGetBuildList6(){
+    public void testGetBuildListRightOrder(){
     	List<Integer> buildList = defaultAction.getBuildList(10, "show");
     	assertTrue( buildList.get(0) == 30 );
     }
 	
 	@Test
-    public void testGetBuildList7(){
+    public void testGetBuildListRightOrderWithCompFail(){
     	List<Integer> buildList = defaultAction.getBuildList(10, "no");
     	assertTrue( buildList.get(0) == 29 );
     }
 	
 	@Test
 	public void testGetUserList(){
-		TestResultsAnalyzerAction newaction=createDefaultAction2();
+		TestResultsAnalyzerAction newaction=createDefaultActionUser();
 		List<Integer> buildList = newaction.getBuildList(2, "no");
 		List<String> usernames = newaction.getUsersList(buildList);
 		assertTrue(usernames.size()!=0);
@@ -71,7 +71,7 @@ public class TestResultAnalyzerActionTest extends HudsonTestCase {
         String expectedCsvHeader = "\"Package\",\"Class\",\"Test\",\"30\",\"29\",\"28\",\"27\",\"26\",\"25\",\"24\",\"23\",\"22\",\"21\",\"20\",\"19\",\"18\",\"17\",\"16\",\"15\",\"14\",\"13\",\"12\",\"11\",\"10\",\"9\",\"8\",\"7\",\"6\",\"5\",\"4\",\"3\",\"2\",\"1\"";
         String expectedCsvData = "\"TestPackage\",\"TestLibrary\",\"FakeTest\",\"PASSED\"";
 
-		TestResultsAnalyzerAction analyzerAction = createDefaultAction();
+		TestResultsAnalyzerAction analyzerAction = createDefaultActionThirtyBuilds();
 
 		PackageInfo fakePackage = new PackageInfo();
 		fakePackage.setName("TestPackage");
@@ -110,13 +110,14 @@ public class TestResultAnalyzerActionTest extends HudsonTestCase {
 	}
 
 
-	private TestResultsAnalyzerAction createDefaultAction(){
+	private TestResultsAnalyzerAction createDefaultActionThirtyBuilds(){
 		List<Integer> builds = new ArrayList<Integer>();
         Vector<Integer> compileFailedBuilds = new Vector<Integer>();
-        for(int i=30; i > 0; i--){
+        for(int i=30; i > 0; i--) {
             builds.add(i);
-        	if(i % 5 == 0)
+        	if(i % 5 == 0) {
         		compileFailedBuilds.add(i);
+        	}
         }
         
     	TestResultsAnalyzerAction action = 
@@ -125,10 +126,10 @@ public class TestResultAnalyzerActionTest extends HudsonTestCase {
     	return action;
 	}
 	
-	private TestResultsAnalyzerAction createDefaultAction2(){
+	private TestResultsAnalyzerAction createDefaultActionUser(){
 		List<Integer> builds = new ArrayList<Integer>();
         Vector<Integer> compileFailedBuilds = new Vector<Integer>();
-        for(int i=2; i > 0; i--){
+        for(int i=2; i > 0; i--) {
         	builds.add(i);
         }
         List <String> userinBuildChange=new ArrayList<String>();		

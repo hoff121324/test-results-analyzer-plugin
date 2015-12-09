@@ -20,7 +20,7 @@ import java.util.TreeMap;
 public class PackageInfoTest {	
 
 	@Test
-	public void testSetTotalFlaky_3Class6Flaky(){
+	public void testSetTotalFlakySixFlaky(){
 		Map<String, ClassInfo> classes = new TreeMap<String, ClassInfo>();
 		int buildNum = 1;
 		
@@ -34,7 +34,7 @@ public class PackageInfoTest {
 	}
 	
 	@Test
-	public void testSetTotalFlaky_buildNum(){
+	public void testSetTotalFlakyBuildNum(){
 		Map<String, ClassInfo> classes = new TreeMap<String, ClassInfo>();
 		int buildNum = 1;
 		
@@ -48,7 +48,7 @@ public class PackageInfoTest {
 	}
 	
 	@Test
-	public void testSetTotalFlaky_emptyClass(){
+	public void testSetTotalFlakyEmptyClass(){
 		Map<String, ClassInfo> classes = new TreeMap<String, ClassInfo>();
 		int buildNum = 1;
 		

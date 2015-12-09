@@ -66,7 +66,6 @@ function generateRuntimePieChart(inputData) {
 	var buildNumber = inputData == undefined ? Object.keys(pieChartResult).pop() : inputData;
 	var resultTitle = "Tests runtime details for " + buildNumber;
 
-	var total = 0;
 	var slow = 0;
 	var medi = 0;
 	var fast = 0;
@@ -75,7 +74,6 @@ function generateRuntimePieChart(inputData) {
 	var lowThreshold = parseFloat($j("#runTimeLowThreshold").val());
 	var highThreshold = parseFloat($j("#runTimeHighThreshold").val());
 
-	total = runtimeArray.length;
 	runtimeArray.each(function (time) {
 		if (time < lowThreshold) {
 			fast ++;
@@ -85,7 +83,11 @@ function generateRuntimePieChart(inputData) {
 			medi ++;
 		}
 	});
-	inputData = calculateRuntimePercentage(slow, medi, fast, total);
+	inputData = [
+		['fast',   fast],
+		['slow',   slow],
+		['medium', medi]
+	];
 	$j("#piechart").highcharts(getPieChartConfig(inputData, resultTitle))
 }
 
@@ -94,7 +96,6 @@ function getRuntimeLineChartConfig(chartCategories, chartData) {
 		{
 			name: 'Runtime',
 			data: chartData["Runtime"]
-			//color: '#24A516'
 		}
 	];
 	var colorsVar = [statusColors["runtime"]];
@@ -397,15 +398,12 @@ function getLineChartConfig(chartCategories, chartData) {
 			{
 				name: 'Passed',
 				data: chartData["Passed"]
-				//color: '#24A516'
 			}, {
 				name: 'Failed',
 				data: chartData["Failed"]
-				//color: '#FD0505'
 			}, {
 				name: 'Skipped',
 				data: chartData["Skipped"]
-				//color: '#AEAEAE'
 			}, {
 				name: 'Total',
 				data:  chartData["Total"]
@@ -470,14 +468,6 @@ function getBarChartConfig(chartCategories, chartData) {
 	}
 
 	return barchart;
-}
-
-function calculateRuntimePercentage(slow, medi, fast, total) {
-	return [
-		['fast',   (fast * 100) / total],
-		['slow',   (slow * 100) / total],
-		['medium', (medi * 100) / total]
-	];
 }
 
 function calculatePercentage(passed, failed, skipped, total) {

@@ -148,10 +148,8 @@ public class HighChartTest {
 		validateWindowWidth(400, by);
 	}
 
-	@Test
-	@LocalData
-	public void tableColorTest() throws Exception {
-		setConfigurationColor("passedStatusColor", "Bright Green");
+	private void tableColorTestHelper(String color, String rgb) throws Exception {
+		setConfigurationColor("passedStatusColor", color);
 		setPassFailCharts();
 		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".passed")));
 		List<WebElement> elements = driver.findElements(By.cssSelector(".table-cell.build-result.passed"));
@@ -159,17 +157,16 @@ public class HighChartTest {
 
 		for(WebElement e : elements) {
 			found = true;
-			assertEquals("rgba(0, 255, 0, 1)", e.getCssValue("background-color"));
+			assertEquals(rgb, e.getCssValue("background-color"));
 		}
 		assertTrue(found);
-		setConfigurationColor("passedStatusColor", "Light Green (Recommended)");
-		setPassFailCharts();
-		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".passed")));
-		List<WebElement> elements2 = driver.findElements(By.cssSelector(".table-cell.build-result.passed"));
+	}
 
-		for(WebElement e : elements2) {
-			assertEquals("rgba(146, 208, 80, 1)", e.getCssValue("background-color"));
-		}
+	@Test
+	@LocalData
+	public void tableColorTest() throws Exception {
+		tableColorTestHelper("Bright Green", "rgba(0, 255, 0, 1)");
+		tableColorTestHelper("Light Green (Recommended)", "rgba(146, 208, 80, 1)");
 	}
 
 	@Test
@@ -266,6 +263,7 @@ public class HighChartTest {
 
 		for(WebElement e : elements) {
 			float value = Float.parseFloat(e.getText());
+			//assert that the value is the same as its smallest integer
 			assertEquals(value, Math.ceil(value), 0.0);
 		}
 	}

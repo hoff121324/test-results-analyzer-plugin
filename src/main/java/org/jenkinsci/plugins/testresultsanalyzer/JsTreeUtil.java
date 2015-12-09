@@ -1,8 +1,8 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
+import org.jenkinsci.plugins.testresultsanalyzer.result.CoverageResultDTO;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
-import hudson.model.User;
-
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +14,8 @@ import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 
 public class JsTreeUtil {
 
-	public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users ) {
-		JSONObject tree = new JSONObject();
+    public JSONObject getJsTree(List<Integer> builds, ResultInfo resultInfo, List<String> users, Map<Integer, CoverageResultDTO> coverageResults) {
+        JSONObject tree = new JSONObject();
 
 		JSONArray buildJson = new JSONArray();
 
@@ -28,23 +28,29 @@ public class JsTreeUtil {
 		JSONArray results = new JSONArray();
 
 		for(Object packageName : packageResults.keySet()) {
-
 			JSONObject packageJson = packageResults.getJSONObject((String) packageName);
 			results.add(createJson(builds, packageJson));
 		}
 
 		tree.put("results", results);
 
-		JSONArray owner = new JSONArray();
-		for(int i=0; i < users.size(); i++){
-			JSONObject userJson = new JSONObject();
-			userJson.put( "userSet" , users.get(i) );
-			owner.add(userJson);
-		}
+        JSONArray owner = new JSONArray();
+        for(int i=0; i < users.size(); i++){
+            JSONObject userJSON = new JSONObject();
+            userJSON.put( "userSet" , users.get(i) );
+            owner.add(userJSON);
+        }
 
-		tree.put("owneruser", owner);
-		return tree;
-	}
+		//Add entry for Cobertura Coverage Results
+        JSONObject coverageResultsJSON = new JSONObject();
+        for(Map.Entry<Integer, CoverageResultDTO> entry : coverageResults.entrySet()) {
+            coverageResultsJSON.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        tree.put("coverage", coverageResultsJSON);
+        tree.put("owneruser", owner);
+        return tree;
+    }
 
 	private JSONObject getBaseJson() {
 		JSONObject jsonObject = new JSONObject();

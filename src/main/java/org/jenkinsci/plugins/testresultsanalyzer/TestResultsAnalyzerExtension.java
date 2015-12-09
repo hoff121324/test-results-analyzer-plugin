@@ -1,15 +1,13 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
+import hudson.Extension;
+import hudson.model.*;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.*;
-
-import hudson.Extension;
-import hudson.model.*;
-
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
 
 @Extension
 public class TestResultsAnalyzerExtension extends TransientProjectActionFactory implements Describable<TestResultsAnalyzerExtension> {
@@ -72,7 +70,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 		private String skippedStatusText = "SKIPPED";
 
 		//true = Show Test Runtimes in Charts instead of Passes and Failures
-		private boolean chartDataType = false;
+		private String chartDataType = "passfail";
 
 		public DescriptorImpl() {
 			//jenkins actually will edit your program's memory and set variables
@@ -98,7 +96,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 				showPieGraph = formData.getBoolean("showPieGraph");
 				runTimeLowThreshold = formData.getString("runTimeLowThreshold");
 				runTimeHighThreshold = formData.getString("runTimeHighThreshold");
-				chartDataType = formData.getBoolean("chartDataType");
+				chartDataType = formData.getString("chartDataType");
 
 				passedStatusColor = formData.getString("passedStatusColor");
 				failedStatusColor = formData.getString("failedStatusColor");
@@ -151,9 +149,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 			return runTimeHighThreshold;
 		}
 
-		public boolean getChartDataType() {
-			return chartDataType;
-		}
+		public String getChartDataType() { return chartDataType; }
 
 		public String getPassedStatusColor() {
 			return passedStatusColor;

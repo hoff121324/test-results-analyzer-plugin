@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.testresultsanalyzer.result.data.TestCaseResultData;
 import org.jenkinsci.plugins.testresultsanalyzer.result.data.ClassResultData;
 
 public class ClassInfo extends Info {
@@ -19,6 +20,15 @@ public class ClassInfo extends Info {
 
 		evaluateStatusses(classResult);
 		addTests(buildNumber, classResult, url);
+
+		int flakyCaseCount = countFlakyFromChildren( buildNumber );
+		classResultData.setTotalFlaky(flakyCaseCount);
+		if (flakyCaseCount != 0){
+			classResultData.setFlaky(true);
+		} else {
+			classResultData.setFlaky(false);
+		}
+
 		this.buildResults.put(buildNumber, classResultData);
 	}
 
@@ -52,5 +62,16 @@ public class ClassInfo extends Info {
 			json.put(testName, tests.get(testName).getJsonObject());
 		}
 		return json;
+	}
+
+	public int countFlakyFromChildren( Integer buildNumber ){
+		int flakyCaseCount = 0;
+		for(TestCaseInfo caseInfo : tests.values()){
+			TestCaseResultData caseResult = (TestCaseResultData)caseInfo.getBuildPackageResults().get(buildNumber);
+			if (caseResult != null){
+				flakyCaseCount += caseResult.getTotalFlaky();
+			}
+		}
+		return flakyCaseCount;
 	}
 }

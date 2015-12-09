@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.junit.Assert.assertTrue;
 
@@ -53,6 +54,7 @@ public class AnalyzerLinkTest {
         String expectedLink = "/job/test/edu.illinois.cs427$mp3/3/testReport/edu.illinois.cs427.mp3";
 
         //act
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3']//div[@class='table-cell build-result passed']//a")));
         WebElement packageLink = driver.findElement(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3']//div[@class='table-cell build-result passed']//a"));
         String actualLink = packageLink.getAttribute("href");
 
@@ -67,6 +69,7 @@ public class AnalyzerLinkTest {
         String expectedLink = "/job/test/edu.illinois.cs427$mp3/3/testReport/edu.illinois.cs427.mp3/BookTest";
 
         //act
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3-BookTest']//div[@class='table-cell build-result passed']//a")));
         WebElement packageLink = driver.findElement(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3-BookTest']//div[@class='table-cell build-result passed']//a"));
         String actualLink = packageLink.getAttribute("href");
 
@@ -81,6 +84,7 @@ public class AnalyzerLinkTest {
         String expectedLink = "/job/test/edu.illinois.cs427$mp3/3/testReport/edu.illinois.cs427.mp3/BookTest/testBookConstructor1";
 
         //act
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3-BookTest-testBookConstructor1']//div[@class='table-cell build-result passed']//a")));
         WebElement packageLink = driver.findElement(By.xpath("//div[@class='table-row base-edu_illinois_cs427_mp3-BookTest-testBookConstructor1']//div[@class='table-cell build-result passed']//a"));
         String actualLink = packageLink.getAttribute("href");
 

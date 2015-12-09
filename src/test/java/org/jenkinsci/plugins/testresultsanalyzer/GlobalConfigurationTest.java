@@ -44,6 +44,16 @@ public class GlobalConfigurationTest {
     }
 
     /**
+     *  @brief Helper method to clear a text box
+     *  Sending backspace while the element is not empty doesn't seem to work correctly
+     */
+    public void clearTextBox(WebElement element) {
+        for(int i=0; i<20; i++) {
+             element.sendKeys(Keys.BACK_SPACE);
+        }
+	}
+
+    /**
      * @brief assert that all required elements are present on the configuration page
      */
     @Test
@@ -91,8 +101,7 @@ public class GlobalConfigurationTest {
         }
         assertEquals(null, driver.findElement(By.name("showAllBuilds")).getAttribute("checked"));
         WebElement noOfBuilds = driver.findElement(By.name("noOfBuilds"));
-        noOfBuilds.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        noOfBuilds.sendKeys(Keys.BACK_SPACE);
+		clearTextBox(noOfBuilds);
         noOfBuilds.sendKeys("19");
         noOfBuilds.sendKeys(Keys.RETURN); //causes the page to reload
         waitForPageLoad();
@@ -116,8 +125,7 @@ public class GlobalConfigurationTest {
 
     public void TextSelectionHelper(String name, String text) {
         WebElement passedStatusText = driver.findElement(By.name(name));
-        passedStatusText.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        passedStatusText.sendKeys(Keys.BACK_SPACE);
+		clearTextBox(passedStatusText);
         passedStatusText.sendKeys(text);
         passedStatusText.sendKeys(Keys.RETURN); //causes the page to reload
         waitForPageLoad();

@@ -197,6 +197,12 @@ public class AnalyzerPageTest {
 		driver.get(query);
 	}
 
+	private void BuildTestHelper(String javaScriptCommand, String contained)throws Exception {
+		js.executeScript(javaScriptCommand);
+		WebElement exclamation_mark = driver.findElement(By.xpath("//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
+		assertTrue(exclamation_mark.getAttribute("style").contains(contained));
+	}
+
 	@Test
     public void newFailuresTest_noBuild() throws Exception {
         String javaScriptCommand = "var Obj = {\"" + 
@@ -602,6 +608,7 @@ public class AnalyzerPageTest {
         WebElement cs512_exclamation_mark = driver.findElement(By.xpath("//*[contains(@class, 'cs512')]//*[contains(concat(' ', @class, ' '), ' icon-exclamation-sign ')]"));
         assertTrue(cs512_exclamation_mark.getAttribute("style").contains("inline-block"));
     }
+
 
 
 	// TESTS for filterTests()

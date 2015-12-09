@@ -3,7 +3,7 @@ var treeMarkup = "";
 var reevaluateChartData = true;
 var displayValues = false;
 
-function filterTests() {
+function searchTests() {
 	var table = $j(".table")[0];
 	var rows = $j(table).find(".table-row");
 	$j.each(rows, function(index, row) {
@@ -68,18 +68,108 @@ function filterTests() {
 		});
 	}
 
-	$j('.table .table-row').filter(function(idx, elem) {
-		return $j(elem).css('display') != 'none';
-	}).each(function(idx, elem) {
-		var status = JSON.parse($j($j(elem).find('.build-result').get(0)).attr('data-result')).status;
-		if(
-			(status == "FAILED" && !$j('#failFilter').is(":checked")) ||
-			(status == "PASSED" && !$j('#passFilter').is(":checked")) ||
-			(status == "SKIPPED" && !$j('#skipFilter').is(":checked"))) {
-			$j(elem).hide();
-		}
-	});
 }
+
+function filterTestByStatus(statuses, build_no){
+
+    var table = $j(".table")[0];
+    var rows = $j(table).find(".table-row");
+    $j.each(rows, function(index, row){
+            $j(row).css("display", "none");
+    });
+    $j.each(statuses, function(index, status){
+
+        if (status == "FAILED"){
+            json_field = 'isPassed';
+            target_value = false;
+        }
+        else if (status == "PASSED"){
+            json_field = 'isPassed';
+            target_value = true;
+        }
+        else if (status == "SKIPPED"){
+            json_field = 'isSkipped';
+            target_value = true;
+        }
+        else {
+            json_field = 'isFlaky';
+            target_value = true;
+        }
+
+        allBuildHeaders = $j('.table-cell.sha');
+        reqd_build_element = allBuildHeaders.filter( function() {
+            return String($j(this).text()) == String(build_no);
+        })[0];
+        var ind = $j.inArray( reqd_build_element, allBuildHeaders ); 
+        
+        $j.each(rows, function(index, row){
+                var testCell = $j(row).find(".build-result")[ind];
+                condition = JSON.parse($j(testCell).attr("data-result"))[json_field] == target_value;
+                if (status == "PASSED"){
+                    condition = condition & (JSON.parse($j(testCell).attr("data-result"))['isFlaky'] == false);
+                }
+                if (condition){
+                    $j(row).css("display", "table-row");
+                }  
+        });
+    });
+}
+
+function addBuildNumbers(){
+    $j('#BuildNumber')
+    .find('option')
+    .remove();
+    allBuildHeaders = $j('.table-cell.sha');
+    $j.each( allBuildHeaders, function(i, buildObj) {
+        $j('#BuildNumber')
+         .append($j("<option></option>")
+         .attr("value",parseInt($j(buildObj).text()))
+         .text(String($j(buildObj).text()))); 
+    });
+}
+
+function filterTestByRuntime(inequality, val, build_no){
+
+    allBuildHeaders = $j('.table-cell.sha');
+    reqd_build_element = allBuildHeaders.filter( function() {
+        return String($j(this).text()) == String(build_no);
+    })[0];
+    var ind = $j.inArray( reqd_build_element, allBuildHeaders ); 
+    
+    var table = $j(".table")[0];
+    var rows = $j(table).find(".table-row");
+    $j.each(rows, function(index, row){
+            var testCell = $j(row).find(".build-result")[ind];
+            
+            runtime = JSON.parse($j(testCell).attr("data-result"))['totalTimeTaken'];
+            totalTests = JSON.parse($j(testCell).attr("data-result"))['totalTests'];
+
+            if (inequality == 'LessThanEqualTo' & runtime > val){
+                $j(row).css("display", "none");
+            }
+            else if (inequality == 'GreaterThanEqualTo' & runtime < val){
+                $j(row).css("display", "none");
+            }
+            else {
+                $j(row).css("display", "table-row");
+            }  
+    });
+}
+
+function showRelevantFilterOptions(){
+    filterBy = $j('#FilterSelectBy').val();
+    if (filterBy == "STATUS"){
+        $j('#RuntimeFilterOptions').css('display', 'none');
+        $j('#RuntimeFilterVal').css('display','none');
+        $j('#StatusFilterOptions').show();
+    }
+    else { // filterBy == "RUNTIME"
+        $j('#RuntimeFilterOptions').show();
+        $j('#RuntimeFilterVal').show();
+        $j('#StatusFilterOptions').css('display','none');
+    }
+}
+
 
 function reset(){
 	reevaluateChartData = true;
@@ -123,7 +213,6 @@ function populateTemplate() {
 		treeMarkup = analyzerTemplate(itemsResponse);
 		$j(".table").html(treeMarkup);
 		addEvents();
-		newFailingTests();
 		generateCharts();
 	}, this));
 }
@@ -133,7 +222,6 @@ function collapseAll() {
 	$j(".table").html("")
 	$j(".table").html(treeMarkup);
 	addEvents();
-	newFailingTests();
 }
 
 function expandAll() {
@@ -182,6 +270,8 @@ function addEvents() {
 		toggleHandler(this);
 	});
 	checkBoxEvents();
+	newFailingTests();
+	addBuildNumbers();
 }
 
 function checkBoxEvents() {
@@ -209,6 +299,31 @@ function checkChildren(node, checked) {
 		checkChildren(this, checked);
 	});
 }
+
+function applyFilter() {
+        filterBy = $j('#FilterSelectBy').val();
+        if (filterBy == "STATUS"){
+            var statuses = new Array();
+            elements = ["statusFilterPassed", "statusFilterFailed", "statusFilterFlaked", "statusFilterSkipped"];
+            $j.each(elements, function(index, element_id){
+                if ($j('#' + element_id).is(':checked')){
+                    statuses.push($j('#' + element_id).val());
+                }
+            });
+            
+            //status = $jQuery('#StatusFilterOptions').val();
+            build_no = parseInt($j('#BuildNumber').val());
+            filterTestByStatus(statuses, build_no);
+        }
+        else {
+            inequality = $j('#RuntimeFilterOptions').val();
+            val = parseFloat($j("#RuntimeFilterVal").val());
+            build_no = parseInt($j('#BuildNumber').val());
+            filterTestByRuntime(inequality, val, build_no);
+            
+        }
+
+    }
 
 function checkParent(node) {
 	var parent = $j(node).attr("parentclass");

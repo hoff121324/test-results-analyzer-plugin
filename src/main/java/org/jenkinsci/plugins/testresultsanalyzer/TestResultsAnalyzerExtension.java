@@ -72,7 +72,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 		private String skippedStatusText = "SKIPPED";
 
 		//true = Show Test Runtimes in Charts instead of Passes and Failures
-		private boolean chartDataType = false;
+		private String chartDataType = "passfail";
 
 		public DescriptorImpl() {
 			//jenkins actually will edit your program's memory and set variables
@@ -98,7 +98,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 				showPieGraph = formData.getBoolean("showPieGraph");
 				runTimeLowThreshold = formData.getString("runTimeLowThreshold");
 				runTimeHighThreshold = formData.getString("runTimeHighThreshold");
-				chartDataType = formData.getBoolean("chartDataType");
+				chartDataType = formData.getString("chartDataType");
 
 				passedStatusColor = formData.getString("passedStatusColor");
 				failedStatusColor = formData.getString("failedStatusColor");
@@ -151,7 +151,7 @@ public class TestResultsAnalyzerExtension extends TransientProjectActionFactory 
 			return runTimeHighThreshold;
 		}
 
-		public boolean getChartDataType() {
+		public String getChartDataType() {
 			return chartDataType;
 		}
 

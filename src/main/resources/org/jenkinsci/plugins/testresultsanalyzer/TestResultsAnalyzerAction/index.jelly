@@ -61,6 +61,7 @@ var $j = jQuery.noConflict();
 					<select id="chartDataType">
 						<option value="passfail">Passes/Failures</option>
 						<option value="runtime">Test Runtimes</option>
+						<option value="codeCoverage">Code Coverage</option>
 					</select>
 				</td>
 			</tr>
@@ -178,6 +179,8 @@ var $j = jQuery.noConflict();
 		"skipped" : "${it.skippedStatusColor}",
 		"total" : "${it.totalStatusColor}",
 		"runtime" : "${it.runtimeStatusColor}",
+		"methods" : "#800080",
+		"packages" : "#FF00FF",
 		"na" :""
 	};
 
@@ -228,9 +231,15 @@ var $j = jQuery.noConflict();
 		jQuery("#noofbuilds").attr('disabled', ${it.showAllBuilds});
 		jQuery("#filterButton").click(applyFilter);
 
-		if(${it.chartDataType}) {
+		if(${it.chartDataType} === "runtime") {
 			jQuery("#chartDataType").val("runtime");
 			jQuery("#bargraph").attr('disabled', true);
+		} else if (${it.chartDataType} === "codeCoverage") {
+			jQuery("#chartDataType").val("codeCoverage");
+			jQuery("#bargraph").attr('disabled', true);
+			jQuery("#piegraph").attr('disabled', true);
+			jQuery("#runTimeLowThreshold").attr('disabled', true);
+			jQuery("#runTimeHighThreshold").attr('disabled', true);
 		} else {
 			jQuery("#chartDataType").val("passfail");
 			jQuery("#runTimeLowThreshold").attr('disabled', true);
@@ -263,9 +272,10 @@ var $j = jQuery.noConflict();
 	});
 
 	jQuery("#chartDataType").change(function (e) {
-		jQuery("#bargraph").attr('disabled', e.target.value == "runtime");
-		jQuery("#runTimeLowThreshold").attr('disabled', e.target.value == "passfail");
-		jQuery("#runTimeHighThreshold").attr('disabled', e.target.value == "passfail");
+		jQuery("#bargraph").attr('disabled', e.target.value !== "passfail");
+		jQuery("#piegraph").attr('disabled', e.target.value == "codeCoverage");
+		jQuery("#runTimeLowThreshold").attr('disabled', e.target.value !== "runtime");
+		jQuery("#runTimeHighThreshold").attr('disabled', e.target.value !== "runtime");
 	});
 
 	function download(filename, text) {

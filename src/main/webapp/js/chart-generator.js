@@ -21,8 +21,7 @@ function generateChart(chartType) {
 		if (chartType.pie) {
 			generateRuntimePieChart();
 		}
-	}
-	else {
+	} else if(chartType.type === "passfail") {
 		if (chartType.line) {
 			generateLineChart();
 		}
@@ -33,6 +32,10 @@ function generateChart(chartType) {
 
 		if (chartType.pie) {
 			generatePieChart();
+		}
+	} else {
+		if (chartType.line) {
+			generateCoverageLineChart();
 		}
 	}
 }
@@ -182,6 +185,34 @@ function generateLineChart() {
 	}
 	$j(function () {
 		$j("#linechart").highcharts(getLineChartConfig(chartCategories, chartData))
+	});
+}
+
+function generateCoverageLineChart() {
+	var chartCategories = [];
+	var chartData = {
+		"Classes" : [],
+		"Conditionals" : [],
+		"Files" : [],
+		"Lines" : [],
+		"Methods" : [],
+		"Packages" : []
+	};
+
+	for(var key in coverageData) {
+		if(coverageData.hasOwnProperty(key)){
+			var buildResult = coverageData[key];
+			chartCategories.push(key);
+			chartData["Classes"].push(Math.round(eval(buildResult["classes"])*10000)/100);;
+			chartData["Conditionals"].push(Math.round(eval(buildResult["conditionals"])*10000)/100);
+			chartData["Files"].push(Math.round(eval(buildResult["files"])*10000)/100);
+			chartData["Lines"].push(Math.round(eval(buildResult["lines"])*10000)/100);
+			chartData["Methods"].push(Math.round(eval(buildResult["methods"])*10000)/100);
+			chartData["Packages"].push(Math.round(eval(buildResult["packages"])*10000)/100);
+		}
+	}
+	$j(function () {
+		$j("#linechart").highcharts(getCoverageLineChartConfig(chartCategories, chartData))
 	});
 }
 
@@ -426,6 +457,85 @@ function getLineChartConfig(chartCategories, chartData) {
 			}, {
 				name: 'Flaked',
 				data:  chartData["Flaked"]
+			}
+		]
+	}
+
+	return linechart;
+}
+
+function getCoverageLineChartConfig(chartCategories, chartData) {
+	var linechart = {
+		title: {
+			text: 'Code Coverage',
+			x: -20 //center
+		},
+		xAxis: {
+			title: {
+				text: 'Build number'
+			},
+			categories: chartCategories
+		},
+		yAxis: {
+			title: {
+				text: 'Percentage of Coverage'
+			},
+			plotLines: [
+				{
+					value: 0,
+					width: 1,
+					color: '#808080'
+				}
+			]
+		},
+		credits: {
+			enabled: false
+		},
+		tooltip: {
+			headerFormat: '<b>Build no: {point.x}</b><br>',
+			shared: true,
+			valueSuffix: ' %',
+			crosshairs: true
+		},
+		legend: {
+			layout: 'vertical',
+			align: 'right',
+			verticalAlign: 'middle',
+			borderWidth: 0
+		},
+		colors : [
+			statusColors["passed"],
+			statusColors["failed"],
+			statusColors["skipped"],
+			statusColors["total"],
+			statusColors["methods"],
+			statusColors["packages"]
+		],
+		series: [
+			{
+				name: 'Classes',
+				data: chartData["Classes"]
+				//color: '#FD0505'
+			}, {
+				name: 'Conditionals',
+				data: chartData["Conditionals"]
+				//color: '#24A516'
+			}, {
+				name: 'Files',
+				data: chartData["Files"]
+				//color: '#AEAEAE'
+			}, {
+				name: 'Lines',
+				data:  chartData["Lines"]
+				//color: '#FDED72'
+			}, {
+				name: 'Methods',
+				data:  chartData["Methods"]
+				//color: '#800080'
+			}, {
+				name: 'Packages',
+				data:  chartData["Packages"]
+				//color: '#FF8040'
 			}
 		]
 	}

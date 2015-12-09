@@ -1,6 +1,10 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
 import hudson.model.*;
+import hudson.plugins.cobertura.CoberturaBuildAction;
+import hudson.plugins.cobertura.Ratio;
+import hudson.plugins.cobertura.targets.CoverageMetric;
+import hudson.plugins.cobertura.targets.CoverageResult;
 import hudson.tasks.junit.PackageResult;
 import hudson.tasks.junit.TestResult;
 import hudson.tasks.test.TabulatedResult;
@@ -13,6 +17,7 @@ import java.util.*;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.testresultsanalyzer.result.CoverageResultDTO;
 import org.jenkinsci.plugins.testresultsanalyzer.result.data.ResultData;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.ClassInfo;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.PackageInfo;
@@ -29,6 +34,7 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 
 	ResultInfo resultInfo;
 	List <String> userString;
+	HashMap<Integer, CoverageResultDTO> coverageResults = new HashMap<Integer, CoverageResultDTO>();
 
 	public TestResultsAnalyzerAction(@SuppressWarnings("rawtypes") AbstractProject project) {
 		this.project = project;
@@ -180,6 +186,9 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 				AbstractBuild build = project.getBuildByNumber(buildNumber);
 				String buildUrl = build.getUrl();
 
+                //Load the Code Coverage Results from Cobertura into the coverageResult variable
+                LoadCoberturaResults(buildNumber, build);
+
 				//get user set for this build
 				Set<User> tempUsers = build.getCulprits();
 				String userId = "";	   //convert user set to String of username
@@ -203,6 +212,43 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 				updateEmptyUser(i);
 		}
 	}
+
+    /**
+     * Loads the Cobertura Results from a specific Jenkins build.
+     * @param buildNumber buildNumber to load Cobertura Results for.
+     * @param build Abstract build to load Cobertura Results for.
+     */
+    private void LoadCoberturaResults(int buildNumber, AbstractBuild build) {
+        CoberturaBuildAction buildAction = null;
+          //Check if Project has Parent (example: MavenModule has a parent of MavenModuleSet)
+        if(project.getParent() != null) {
+            //Get the specific build as seen by the top level project
+            AbstractBuild tempBuild = ((AbstractProject) project.getParent()).getBuildByNumber(buildNumber);
+            if(tempBuild != null) {
+                //Get the Cobertura build action from the specific build (if possible)
+                buildAction = tempBuild.getAction(CoberturaBuildAction.class);
+            }
+        } else {
+            buildAction = build.getAction(CoberturaBuildAction.class);
+        }
+
+        if(buildAction != null) {
+            //Get specific top level Coverage results from the specific build
+            CoverageResult result = buildAction.getResult();
+            if (result != null) {
+				CoverageResultDTO coverageResult = new CoverageResultDTO();
+                //Convert metrics to CoverageResultsDTO for serializing to JSON
+                Map<CoverageMetric, Ratio> metrics = result.getResults();
+                coverageResult.setPackages(metrics.get(CoverageMetric.PACKAGES).numerator + "/" + metrics.get(CoverageMetric.PACKAGES).denominator);
+                coverageResult.setFiles(metrics.get(CoverageMetric.FILES).numerator + "/" + metrics.get(CoverageMetric.FILES).denominator);
+                coverageResult.setClasses(metrics.get(CoverageMetric.CLASSES).numerator + "/" + metrics.get(CoverageMetric.CLASSES).denominator);
+                coverageResult.setMethods(metrics.get(CoverageMetric.METHOD).numerator + "/" + metrics.get(CoverageMetric.METHOD).denominator);
+                coverageResult.setLines(metrics.get(CoverageMetric.LINE).numerator + "/" + metrics.get(CoverageMetric.LINE).denominator);
+                coverageResult.setConditionals(metrics.get(CoverageMetric.CONDITIONAL).numerator + "/" + metrics.get(CoverageMetric.CONDITIONAL).denominator);
+				coverageResults.put(buildNumber, coverageResult);
+            }
+        }
+    }
 
 	@JavaScriptMethod
 	public JSONObject getTreeResult(String noOfBuildsNeeded, String showCompileFail) {
@@ -304,7 +350,7 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 		return TestResultsAnalyzerExtension.DESCRIPTOR.getShowBuildTime();
 	}
 
-	public boolean getChartDataType() {
+	public String getChartDataType() {
 		return TestResultsAnalyzerExtension.DESCRIPTOR.getChartDataType();
 	}
 

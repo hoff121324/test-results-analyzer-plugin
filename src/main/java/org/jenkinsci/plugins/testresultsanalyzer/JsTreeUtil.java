@@ -6,10 +6,12 @@ import hudson.model.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.testresultsanalyzer.result.CoverageResultDTO;
 import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 
 public class JsTreeUtil {
@@ -42,6 +44,13 @@ public class JsTreeUtil {
 			owner.add(userJson);
 		}
 
+		//Add entry for Cobertura Coverage Results
+        JSONObject coverageResultsJSON = new JSONObject();
+        for(Map.Entry<Integer, CoverageResultDTO> entry : coverageResults.entrySet()) {
+            coverageResultsJSON.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        tree.put("coverage", coverageResultsJSON);
 		tree.put("owneruser", owner);
 		return tree;
 	}

@@ -12,10 +12,12 @@ public abstract class ResultData {
 	private String name;
 	private boolean isPassed;
 	private boolean isSkipped;
+	private boolean isFlaky;
 	private transient TabulatedResult packageResult;
 	private int totalTests;
 	private int totalFailed;
 	private int totalPassed;
+	private int totalFlaky;
 	private int totalSkipped;
 	private List<ResultData> children = new ArrayList<ResultData>();
 	private float totalTimeTaken;
@@ -56,6 +58,15 @@ public abstract class ResultData {
 		this.isSkipped = isSkipped;
 	}
 
+	public boolean isFlaky() {
+        return isFlaky;
+    }
+
+	
+    public void setFlaky(boolean isFlaky) {
+        this.isFlaky = isFlaky;
+    }
+
 	public TabulatedResult getPackageResult() {
 		return packageResult;
 	}
@@ -95,6 +106,14 @@ public abstract class ResultData {
 	public void setTotalSkipped(int totalSkipped) {
 		this.totalSkipped = totalSkipped;
 	}
+
+    public int getTotalFlaky() {
+        return totalFlaky;
+    }
+    
+    public void setTotalFlaky(int totalFlaky) {
+        this.totalFlaky = totalFlaky;
+    }
 
 	public List<ResultData> getChildren() {
 		return this.children;
@@ -141,6 +160,8 @@ public abstract class ResultData {
 		setTotalSkipped(result.getSkipCount());
 		setTotalTimeTaken(result.getDuration());
 		setUrl(url);
+		setFlaky(false);
+		setTotalFlaky(0);   
 		evaluateStatus();
 	}
 
@@ -172,8 +193,10 @@ public abstract class ResultData {
 		json.put("totalFailed", totalFailed);
 		json.put("totalPassed", totalPassed);
 		json.put("totalSkipped", totalSkipped);
+		json.put("totalFlaky", totalFlaky);
 		json.put("isPassed", isPassed);
 		json.put("isSkipped", isSkipped);
+		json.put("isFlaky", isFlaky);
 		json.put("totalTimeTaken", totalTimeTaken);
 		json.put("status", status);
 		json.put("url", url);

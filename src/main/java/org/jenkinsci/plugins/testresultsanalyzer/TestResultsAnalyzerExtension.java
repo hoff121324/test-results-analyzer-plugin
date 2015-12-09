@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.testresultsanalyzer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.*;
 
 import hudson.Extension;
 import hudson.model.*;

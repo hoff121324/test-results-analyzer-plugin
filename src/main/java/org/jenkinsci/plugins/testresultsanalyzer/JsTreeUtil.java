@@ -1,5 +1,8 @@
 package org.jenkinsci.plugins.testresultsanalyzer;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.testresultsanalyzer.result.info.ResultInfo;
 import hudson.model.User;
 
 import java.util.List;

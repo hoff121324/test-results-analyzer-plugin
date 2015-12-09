@@ -256,7 +256,7 @@ public class TestResultsAnalyzerAction extends Actionable implements Action {
 		List<Integer> buildList = getBuildList(noOfBuilds, showCompileFail);
 		getUsersList(buildList);
 		JsTreeUtil jsTreeUtils = new JsTreeUtil();
-		return jsTreeUtils.getJsTree(buildList, resultInfo, userString);
+		return jsTreeUtils.getJsTree(buildList, resultInfo, userString, coverageResults);
 	}
 
 	@JavaScriptMethod

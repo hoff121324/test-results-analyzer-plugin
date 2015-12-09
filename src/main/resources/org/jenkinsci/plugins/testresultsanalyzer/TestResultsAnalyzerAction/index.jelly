@@ -231,10 +231,10 @@ var $j = jQuery.noConflict();
 		jQuery("#noofbuilds").attr('disabled', ${it.showAllBuilds});
 		jQuery("#filterButton").click(applyFilter);
 
-		if(${it.chartDataType} === "runtime") {
+		if("${it.chartDataType}" === "runtime") {
 			jQuery("#chartDataType").val("runtime");
 			jQuery("#bargraph").attr('disabled', true);
-		} else if (${it.chartDataType} === "codeCoverage") {
+		} else if ("${it.chartDataType}" === "codeCoverage") {
 			jQuery("#chartDataType").val("codeCoverage");
 			jQuery("#bargraph").attr('disabled', true);
 			jQuery("#piegraph").attr('disabled', true);

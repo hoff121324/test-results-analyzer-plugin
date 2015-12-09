@@ -76,12 +76,12 @@
 	      <groupId>org.jenkins-ci.plugins</groupId>
 	      <artifactId>flaky-test-handler</artifactId>
 	      <version>1.0.1</version>
-	    </dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.main</groupId>
-			<artifactId>maven-plugin</artifactId>
-			<version>2.7.1</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>maven-plugin</artifactId>
+            <version>2.7.1</version>
+        </dependency>
     </dependencies>
 	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
 		artifacts that we need -->

@@ -13,7 +13,7 @@ var tableContent = '<div class="table-row {{parentclass}}-{{addName text}}" pare
 		'{{/if}}' +
 		'>&nbsp;{{text}}</div>' +
 	'{{#each this.buildResults}}' +
-	'\n' + '         <div class="table-cell build-result {{applystatus status}}" data-result=\'{{JSON2string this}}\'><a href="{{url}}">{{applyvalue status totalTimeTaken}}</a></div>' +
+	'\n' + '         <div class="table-cell build-result {{applystatus status}}" data-result=\'{{JSON2string this}}\'><a href="{{url}}">{{applyvalue status isFlaky totalTimeTaken}}</a></div>' +
 	'{{/each}}' +
 	'\n' + '</div>'+
 	'{{#each children}}\n'+
@@ -82,14 +82,18 @@ Handlebars.registerHelper('addName', function (name) {
 	return removeSpecialChars(name);
 });
 
-Handlebars.registerHelper('applyvalue', function (status, totalTimeTaken) {
+Handlebars.registerHelper('applyvalue', function (status, isFlaky, totalTimeTaken) {
 	if(displayValues == true) {
 		return isNaN(totalTimeTaken) ? 'N/A' : totalTimeTaken.toFixed(3) ;
 	} else {
-		if(statusText.hasOwnProperty(status)) {
-			return statusText[status];
+		final_status = status;
+		if (isFlaky){
+            final_status = "FLAKED";
+        }
+		if(statusText.hasOwnProperty(final_status)) {
+			return statusText[final_status];
 		} else {
-			return status;
+			return final_status;
 		}
 	}
 });

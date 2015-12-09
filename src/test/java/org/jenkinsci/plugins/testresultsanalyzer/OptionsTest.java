@@ -172,7 +172,7 @@ public class OptionsTest {
 		//filter tests
 		WebElement searchbar = driver.findElement(By.id("filter"));
 		WebElement row = driver.findElement(By.className("base-edu_illinois_cs427_mp3"));
-		WebElement failFilter = driver.findElement(By.id("failFilter"));
+		WebElement failFilter = driver.findElement(By.id("statusFilterFailed"));
 		assertTrue(row.isDisplayed());
 		searchbar.sendKeys("edu");
 		assertTrue(row.isDisplayed());
@@ -180,12 +180,15 @@ public class OptionsTest {
 		assertFalse(row.isDisplayed());
 		searchbar.sendKeys(Keys.BACK_SPACE);
 		assertTrue(row.isDisplayed());
+		WebElement filterApplyButton = driver.findElement(By.id("filterButton"));
 
 		if(failFilter.isSelected()) {
 			failFilter.click();
+			filterApplyButton.click();
 		}
 		assertFalse(row.isDisplayed());
 		failFilter.click();
+		filterApplyButton.click();
 		assertTrue(row.isDisplayed());
 	}
 

@@ -136,29 +136,10 @@ public class GlobalConfigurationTest {
 
     @Test
     public void ColorSelectionTest() throws Exception {
-        ColorSelectionHelper("passedStatusColor", "Dark Red");
-        ColorSelectionHelper("passedStatusColor", "Light Yellow");
-        ColorSelectionHelper("passedStatusColor", "Light Blue");
         ColorSelectionHelper("passedStatusColor", "Light Green (Recommended)");
-
-        ColorSelectionHelper("failedStatusColor", "Light Yellow");
-        ColorSelectionHelper("failedStatusColor", "Dark Blue");
-        ColorSelectionHelper("failedStatusColor", "Bright Green");
         ColorSelectionHelper("failedStatusColor", "Light Red (Recommended)");
-
-        ColorSelectionHelper("skippedStatusColor", "Bright Red");
-        ColorSelectionHelper("skippedStatusColor", "Purple");
-        ColorSelectionHelper("skippedStatusColor", "Dark Green");
         ColorSelectionHelper("skippedStatusColor", "Light Yellow (Recommended)");
-
-        ColorSelectionHelper("totalStatusColor", "Brown");
-        ColorSelectionHelper("totalStatusColor", "Magenta");
-        ColorSelectionHelper("totalStatusColor", "Light Yellow");
         ColorSelectionHelper("totalStatusColor", "Light Blue (Recommended)");
-
-        ColorSelectionHelper("runtimeStatusColor", "Light Red");
-        ColorSelectionHelper("runtimeStatusColor", "Light Blue");
-        ColorSelectionHelper("runtimeStatusColor", "Light Green");
         ColorSelectionHelper("runtimeStatusColor", "Light Yellow (Recommended)");
     }
 

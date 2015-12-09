@@ -164,6 +164,7 @@ function generateLineChart() {
 	var chartData = {
 		"Failed" : [],
 		"Passed" : [],
+		"Flaked" : [],
 		"Skipped" : [],
 		"Total" : []
 	};
@@ -174,6 +175,7 @@ function generateLineChart() {
 			chartCategories.push(key);
 			chartData["Failed"].push(buildResult["Failed"]);
 			chartData["Passed"].push(buildResult["Passed"]);
+			chartData["Flaked"].push(buildResult["Flaked"]);
 			chartData["Skipped"].push(buildResult["Skipped"]);
 			chartData["Total"].push(buildResult["Total"]);
 		}
@@ -188,6 +190,7 @@ function generateBarChart() {
 	var chartData = {
 		"Failed" : [],
 		"Passed" : [],
+		"Flaked" : [],
 		"Skipped" : []
 	};
 
@@ -197,6 +200,7 @@ function generateBarChart() {
 			chartCategories.push(key);
 			chartData["Failed"].push(buildResult["Failed"]);
 			chartData["Passed"].push(buildResult["Passed"]);
+			chartData["Flaked"].push(buildResult["Flaked"]);
 			chartData["Skipped"].push(buildResult["Skipped"]);
 		}
 	}
@@ -209,6 +213,10 @@ function generateBarChart() {
 		{
 			name: "Failed",
 			data: chartData["Failed"]
+		},
+		{
+			name: "Flaked",
+			data: chartData["Flaked"]
 		},
 		{
 			name: "Skipped",
@@ -225,6 +233,7 @@ function generatePieChart(inputData, resultTitle) {
 		var total = 0;
 		var passed = 0;
 		var failed = 0;
+		var flaked = 0;
 		var skipped = 0;
 
 		for(var key in chartResult) {
@@ -233,12 +242,15 @@ function generatePieChart(inputData, resultTitle) {
 				var buildResult = chartResult[key];
 				if(buildResult["Failed"] > 0){
 					failed ++;
+				} else if(buildResult["Flaked"] > 0) {
+					flaked++;
 				} else if(buildResult["Passed"] > 0) {
 					passed++;
 				} else {
 					skipped ++;
 				}
-				inputData = calculatePercentage(passed,failed,skipped,total);
+
+				inputData = calculatePercentage(passed,failed,flaked,skipped,total);
 			}
 		}
 	}
@@ -278,16 +290,18 @@ function getChartData(selectedRows, type) {
 				}
 			} else {
 				var tempBuildResult = {
-					"Failed" :	 jsonResult["totalFailed"] ? jsonResult["totalFailed"] : 0,
-					"Skipped" :	  jsonResult["totalSkipped"] ? jsonResult["totalSkipped"] : 0,
-					"Passed" :	 jsonResult["totalPassed"] ? jsonResult["totalPassed"] : 0,
-					"Total" :	jsonResult["totalTests"] ? jsonResult["totalTests"] : 0
+					"Failed" :   jsonResult["totalFailed"] ? jsonResult["totalFailed"] : 0,
+					"Skipped" :   jsonResult["totalSkipped"] ? jsonResult["totalSkipped"] : 0,
+					"Flaked" :   jsonResult["totalFlaky"] ? jsonResult["totalFlaky"] : 0,
+					"Passed" :  (jsonResult["totalPassed"] - jsonResult["totalFlaky"]) ? (jsonResult["totalPassed"] - jsonResult["totalFlaky"]): 0,
+					"Total" :   jsonResult["totalTests"] ? jsonResult["totalTests"] : 0
 				};
 				if(chartResult[buildNumber]) {
 					var tempChartBuildResult = chartResult[buildNumber];
 					var result = {
 						"Failed": tempChartBuildResult["Failed"] + tempBuildResult["Failed"],
 						"Skipped": tempChartBuildResult["Skipped"] + tempBuildResult["Skipped"],
+						"Flaked": tempChartBuildResult["Flaked"] + tempBuildResult["Flaked"],
 						"Passed": tempChartBuildResult["Passed"] + tempBuildResult["Passed"],
 						"Total": tempChartBuildResult["Total"] + tempBuildResult["Total"]
 					}
@@ -373,7 +387,8 @@ function getLineChartConfig(chartCategories, chartData) {
 			statusColors["passed"],
 			statusColors["failed"],
 			statusColors["skipped"],
-			statusColors["total"]
+			statusColors["total"],
+			statusColors["flaked"]
 		],
 		plotOptions: {
 			series: {
@@ -387,8 +402,9 @@ function getLineChartConfig(chartCategories, chartData) {
 							var failed = this.series.chart.series[1].data[x1].y;
 							var skipped = this.series.chart.series[2].data[x1].y;
 							var total = this.series.chart.series[3].data[x1].y;
+							var flaked = this.series.chart.series[4].data[x1].y;
 							var resultTitle = 'Build details for build: '+category;
-							generatePieChart(calculatePercentage(passed, failed, skipped, total), resultTitle);
+							generatePieChart(calculatePercentage(passed, failed, flaked, skipped, total), resultTitle);
 						}
 					}
 				}
@@ -407,6 +423,9 @@ function getLineChartConfig(chartCategories, chartData) {
 			}, {
 				name: 'Total',
 				data:  chartData["Total"]
+			}, {
+				name: 'Flaked',
+				data:  chartData["Flaked"]
 			}
 		]
 	}
@@ -446,6 +465,7 @@ function getBarChartConfig(chartCategories, chartData) {
 		colors : [
 			statusColors["passed"],
 			statusColors["failed"],
+			statusColors["flaked"],
 			statusColors["skipped"]
 		],
 		credits: {
@@ -470,15 +490,17 @@ function getBarChartConfig(chartCategories, chartData) {
 	return barchart;
 }
 
-function calculatePercentage(passed, failed, skipped, total) {
+function calculatePercentage(passed, failed, flaked, skipped, total) {
 	var failedPercentage = (failed * 100) / total;
 	var skippedPercentage = (skipped * 100) / total;
 	var passedPercentage = (passed * 100) / total;
+	var flakedPercentage = (flaked * 100) / total;
 
 	return [
 		['Passed',	 passedPercentage],
 		['Failed',	   failedPercentage],
-		['Skipped',	  skippedPercentage]
+		['Flaked',	   flakedPercentage],
+		['Skipped',   skippedPercentage]
 	];
 }
 
@@ -514,6 +536,7 @@ function getPieChartConfig(inputData, resultTitle) {
 		colors : [
 			statusColors["passed"],
 			statusColors["failed"],
+			statusColors["flaked"],
 			statusColors["skipped"],
 			statusColors["total"]
 		],

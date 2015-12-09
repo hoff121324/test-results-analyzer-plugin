@@ -82,7 +82,7 @@ Handlebars.registerHelper('addName', function (name) {
 	return removeSpecialChars(name);
 });
 
-Handlebars.registerHelper('applyvalue', function (status, totalTimeTaken) {
+Handlebars.registerHelper('applyvalue', function (status, isFlaky, totalTimeTaken) {
 	if(displayValues == true) {
 		return isNaN(totalTimeTaken) ? 'N/A' : totalTimeTaken.toFixed(3) ;
 	} else {
